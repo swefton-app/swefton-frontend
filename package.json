@@ -1,0 +1,17 @@
+{
+  "name": "swefton-frontend",
+  "version": "0.0.1",
+  "private": true,
+  "workspaces": [
+    "apps/web/apps/web",
+    "apps/mobile/apps/mobile",
+    "shared"
+  ],
+  "scripts": {
+    "web": "npm run dev --workspace=web",
+    "web:build": "npm run build --workspace=web",
+    "mobile": "npm run start --workspace=mobile",
+    "mobile:android": "npm run android --workspace=mobile",
+    "mobile:ios": "npm run ios --workspace=mobile"
+  }
+}
