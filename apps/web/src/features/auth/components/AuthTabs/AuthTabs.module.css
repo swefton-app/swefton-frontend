@@ -1,0 +1,80 @@
+.tabs {
+  position: relative;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 5px;
+  padding: 5px;
+  margin-bottom: 46px;
+  border: 1px solid rgba(255, 255, 255, .065);
+  border-radius: 13px;
+  background: rgba(8, 10, 15, .86);
+  box-shadow: inset 0 1px rgba(255, 255, 255, .025), 0 16px 36px rgba(0, 0, 0, .16);
+  isolation: isolate;
+  overflow: hidden;
+}
+
+.tabs::before {
+  content: '';
+  position: absolute;
+  z-index: -1;
+  top: 5px;
+  bottom: 5px;
+  left: 5px;
+  width: calc((100% - 15px) / 2);
+  border: 1px solid rgba(255, 255, 255, .08);
+  border-radius: var(--radius-md);
+  background:
+    linear-gradient(135deg, rgba(36, 43, 59, .96), rgba(18, 21, 31, .98)),
+    linear-gradient(90deg, var(--color-brand-cyan), var(--color-brand-purple));
+  box-shadow: 0 9px 22px rgba(0, 0, 0, .3), inset 0 1px rgba(255, 255, 255, .075);
+  transition: transform .8s cubic-bezier(.16, 1, .3, 1), box-shadow .8s ease;
+}
+
+.tabs::after {
+  content: '';
+  position: absolute;
+  z-index: -2;
+  top: 50%;
+  left: 8%;
+  width: 34%;
+  height: 55%;
+  border-radius: 50%;
+  background: linear-gradient(90deg, rgba(2, 217, 245, .28), rgba(120, 56, 255, .28));
+  filter: blur(18px);
+  transform: translateY(-50%);
+  transition: left .8s cubic-bezier(.16, 1, .3, 1);
+}
+
+.tabs[data-active='register']::before { transform: translateX(calc(100% + 5px)); }
+.tabs[data-active='register']::after { left: 58%; }
+
+.tabs button {
+  position: relative;
+  z-index: 1;
+  padding: 11px var(--space-lg);
+  color: #717887;
+  background: transparent;
+  border-radius: var(--radius-md);
+  font-size: var(--font-size-xs);
+  font-weight: 750;
+  cursor: pointer;
+  transition: color .55s ease, transform .55s cubic-bezier(.16, 1, .3, 1), text-shadow .55s ease;
+}
+
+.tabs button:hover { color: #d7deeb; }
+
+.tabs button.active {
+  color: #f8faff;
+  text-shadow: 0 0 18px rgba(111, 197, 255, .25);
+  animation: tab-text-drop .8s cubic-bezier(.2, .8, .3, 1) both;
+}
+
+@keyframes tab-text-drop {
+  0% { opacity: 0; transform: translateY(-10px); }
+  70% { opacity: 1; transform: translateY(2px); }
+  100% { opacity: 1; transform: translateY(0); }
+}
+
+@media (max-width: 480px) {
+  .tabs { margin-bottom: 34px; }
+}

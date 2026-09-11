@@ -1,0 +1,53 @@
+.formField {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-sm);
+}
+
+.fieldLabel {
+  color: var(--color-text-secondary);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: .015em;
+}
+
+.inputShell {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.inputShell input {
+  width: 100%;
+  height: 50px;
+  padding: 0 48px 0 45px;
+  color: #eef2fa;
+  caret-color: var(--color-brand-cyan);
+  outline: 0;
+  border: 1px solid var(--color-border-subtle);
+  border-radius: var(--radius-lg);
+  background: var(--color-surface);
+  font-size: 13px;
+  transition: border-color .2s, box-shadow .2s, background .2s;
+}
+
+.inputShell input::placeholder { color: #4e5562; }
+.inputShell input:hover { border-color: #303644; }
+
+.inputShell input:focus {
+  border-color: rgba(32, 174, 255, .72);
+  background: #0d111a;
+  box-shadow: 0 0 0 3px rgba(21, 141, 255, .1), 0 12px 28px rgba(0, 0, 0, .2);
+}
+
+.fieldIcon {
+  position: absolute;
+  z-index: 1;
+  left: 15px;
+  display: grid;
+  color: #626b7c;
+  pointer-events: none;
+}
+
+.fieldIcon svg { width: 18px; height: 18px; }
+.inputShell:focus-within .fieldIcon { color: #19c7ed; }

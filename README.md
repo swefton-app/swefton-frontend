@@ -16,6 +16,11 @@ Start the web app:
 npm run web
 ```
 
+The web development command runs Vite through Infisical using the `dev`
+environment and `/` secret path. Authenticate with `infisical login` and run
+`infisical init` from `apps/web` before starting it. The web project must define
+`VITE_GOOGLE_CLIENT_ID`; Vite only reads this value when its process starts.
+
 Start the mobile app:
 
 ```bash
