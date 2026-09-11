@@ -1,0 +1,1 @@
+export { AuthenticatedView } from './AuthenticatedView'
