@@ -1,0 +1,13 @@
+{
+  "name": "@swefton/shared",
+  "version": "0.0.1",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "typecheck": "tsc --noEmit"
+  },
+  "exports": {
+    "./auth": "./src/auth/index.ts",
+    "./design": "./src/design/index.ts"
+  }
+}
