@@ -5,33 +5,101 @@ import type {
   RegisterRequest,
   RegisterResponse,
   VerifyEmailRequest,
-} from '@swefton/shared/auth'
-import { authEndpoints } from '@swefton/shared/auth'
-import { httpClient } from '../../../core/http/httpClient'
+} from "@swefton/shared/auth";
+import { authEndpoints } from "@swefton/shared/auth";
+import { onboardingEndpoints } from "@swefton/shared/onboarding";
+import { httpClient } from "../../../core/http/httpClient";
+
+type AuthResponsePayload = AuthResponse & {
+  onboarding_completed?: unknown;
+  onboardingComplete?: unknown;
+  onboarding_complete?: unknown;
+  user?: {
+    onboardingCompleted?: unknown;
+    onboardingComplete?: unknown;
+    onboarding_completed?: unknown;
+    onboarding_complete?: unknown;
+  };
+  data?: AuthResponsePayload;
+};
+
+export function normalizeAuthResponse(
+  payload: AuthResponsePayload,
+): AuthResponse {
+  const response = payload.data ?? payload;
+  const onboardingValue: unknown =
+    response.onboardingCompleted ??
+    response.onboardingComplete ??
+    response.onboarding_completed ??
+    response.onboarding_complete ??
+    response.user?.onboardingCompleted ??
+    response.user?.onboardingComplete ??
+    response.user?.onboarding_completed ??
+    response.user?.onboarding_complete;
+
+  return {
+    ...response,
+    onboardingCompleted:
+      onboardingValue === true ||
+      onboardingValue === 1 ||
+      onboardingValue === "true" ||
+      onboardingValue === "1",
+  };
+}
+
+function isOnboardingComplete(payload: Record<string, unknown>): boolean {
+  const value =
+    payload.onboardingCompleted ??
+    payload.onboardingComplete ??
+    payload.onboarding_completed ??
+    payload.onboarding_complete;
+
+  return value === true || value === 1 || value === "true" || value === "1";
+}
 
 export const authApi: AuthApi = {
   async login(payload: LoginRequest) {
-    const { data } = await httpClient.post<AuthResponse>(authEndpoints.login, payload)
-    return data
+    const { data } = await httpClient.post<AuthResponsePayload>(
+      authEndpoints.login,
+      payload,
+    );
+    const response = normalizeAuthResponse(data);
+
+    if (!response.onboardingCompleted) {
+      try {
+        const onboarding = await httpClient.get<Record<string, unknown>>(
+          onboardingEndpoints.onboarding,
+        );
+
+        return {
+          ...response,
+          onboardingCompleted: isOnboardingComplete(onboarding.data),
+        };
+      } catch {
+        // An incomplete user may not have an onboarding record yet.
+      }
+    }
+
+    return response;
   },
 
   async register(payload: RegisterRequest) {
     const { data } = await httpClient.post<RegisterResponse>(
       authEndpoints.register,
       payload,
-    )
-    return data
+    );
+    return data;
   },
 
   async verifyEmail(payload: VerifyEmailRequest) {
-    await httpClient.post(authEndpoints.verifyEmail, payload)
+    await httpClient.post(authEndpoints.verifyEmail, payload);
   },
 
   async resendVerificationCode(email: string) {
-    await httpClient.post(authEndpoints.resendVerificationCode, { email })
+    await httpClient.post(authEndpoints.resendVerificationCode, { email });
   },
 
   async logout() {
-    await httpClient.post(authEndpoints.logout)
+    await httpClient.post(authEndpoints.logout);
   },
-}
+};
