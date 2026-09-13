@@ -8,6 +8,8 @@
   },
   "exports": {
     "./auth": "./src/auth/index.ts",
-    "./design": "./src/design/index.ts"
+    "./design": "./src/design/index.ts",
+    "./onboarding": "./src/onboarding/index.ts",
+    "./dashboard": "./src/dashboard/index.ts"
   }
 }

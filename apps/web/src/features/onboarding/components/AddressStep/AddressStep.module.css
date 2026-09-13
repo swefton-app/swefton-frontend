@@ -1,0 +1,24 @@
+.locationNote {
+  display: flex;
+  gap: 14px;
+  padding: 16px;
+  color: #aab6c8;
+  border: 1px solid rgba(55, 199, 237, .14);
+  border-radius: 15px;
+  background: linear-gradient(120deg, rgba(20, 126, 176, .1), rgba(80, 50, 170, .06));
+}
+
+.locationNote > span {
+  width: 36px;
+  height: 36px;
+  flex: 0 0 36px;
+  display: grid;
+  place-items: center;
+  color: #42c9ed;
+  border-radius: 11px;
+  background: rgba(34, 170, 211, .1);
+}
+
+.locationNote svg { width: 18px; height: 18px; }
+.locationNote strong { display: block; color: #e9eff9; font-size: 12px; }
+.locationNote p { margin: 5px 0 0; color: #778397; font-size: 11px; line-height: 1.55; }

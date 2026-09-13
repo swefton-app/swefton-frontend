@@ -1,0 +1,692 @@
+.shell {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  color: var(--color-text-primary);
+  background: var(--color-background-primary);
+}
+
+.page {
+  min-height: 0;
+  flex: 1;
+  display: flex;
+  background: var(--color-background-primary);
+}
+
+.sidebar {
+  width: 238px;
+  flex: 0 0 auto;
+  display: flex;
+  flex-direction: column;
+  padding: 30px 18px 22px;
+  border-right: 1px solid var(--color-border-subtle);
+  background: var(--color-background-secondary);
+}
+
+.sidebarTitle,
+.eyebrow,
+.cardLabel {
+  color: var(--color-text-muted);
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+.navigation {
+  display: grid;
+  gap: 7px;
+  margin-top: 22px;
+}
+
+.navigation button {
+  min-height: 44px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 0 13px;
+  color: var(--color-text-muted);
+  border: 1px solid transparent;
+  border-radius: 10px;
+  background: transparent;
+  cursor: pointer;
+  font-size: 13px;
+  text-align: left;
+}
+
+.navigation button:hover {
+  color: var(--color-text-primary);
+  border-color: var(--color-border-subtle);
+  background: var(--color-surface);
+}
+
+.navigation .activeNav {
+  color: var(--color-text-primary);
+  border-color: var(--color-border);
+  background: var(--color-surface-elevated);
+}
+
+.navigation .activeNav svg {
+  color: var(--color-brand-cyan);
+}
+.navigation svg {
+  width: 17px;
+  height: 17px;
+}
+
+.sidebarProfile {
+  display: flex;
+  align-items: center;
+  gap: 11px;
+  margin-top: auto;
+  padding: 14px 10px 0;
+  border-top: 1px solid var(--color-border-subtle);
+  overflow: hidden;
+}
+
+.sidebarProfile > div:last-child,
+.profileName {
+  min-width: 0;
+  display: grid;
+  gap: 3px;
+}
+
+.sidebarProfile strong,
+.profileName strong {
+  overflow: hidden;
+  color: var(--color-text-primary);
+  font-size: 12px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.sidebarProfile span,
+.profileName span {
+  color: var(--color-text-muted);
+  font-size: 10px;
+}
+
+.miniAvatar,
+.avatar,
+.heroAvatar {
+  flex: 0 0 auto;
+  display: grid;
+  place-items: center;
+  overflow: hidden;
+  color: var(--color-background-primary);
+  border: 1px solid var(--color-brand-cyan);
+  border-radius: 50%;
+  background: var(--color-brand-cyan);
+  font-weight: 850;
+}
+
+.miniAvatar {
+  width: 36px;
+  height: 36px;
+  font-size: 11px;
+}
+.avatar {
+  width: 54px;
+  height: 54px;
+  font-size: 15px;
+}
+.heroAvatar {
+  width: 72px;
+  height: 72px;
+  font-size: 20px;
+}
+
+.miniAvatar img,
+.avatar img,
+.heroAvatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.content {
+  width: min(1180px, 100%);
+  margin: 0 auto;
+  padding: 42px clamp(24px, 4vw, 56px) 68px;
+}
+
+.welcome {
+  display: flex;
+  align-items: end;
+  justify-content: space-between;
+  gap: 30px;
+}
+
+.welcome h1,
+.heroCard h2,
+.searchCard h2,
+.profilePanel h2,
+.stateCard h1,
+.welcome p,
+.heroCard p,
+.searchCard p,
+.stateCard p {
+  margin: 0;
+}
+
+.welcome h1 {
+  margin-top: 8px;
+  font-size: clamp(30px, 4vw, 46px);
+  line-height: 1.04;
+  letter-spacing: -0.045em;
+}
+
+.welcome p {
+  margin-top: 10px;
+  color: var(--color-text-muted);
+  font-size: 13px;
+}
+
+.roleBadge,
+.complete {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  color: var(--color-brand-cyan);
+  border: 1px solid var(--color-border);
+  border-radius: 999px;
+  background: var(--color-surface);
+  font-size: 11px;
+  font-weight: 750;
+}
+
+.roleBadge {
+  padding: 9px 13px;
+}
+.roleBadge svg,
+.complete svg {
+  width: 14px;
+  height: 14px;
+}
+
+.heroCard {
+  position: relative;
+  min-height: 280px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 36px;
+  overflow: hidden;
+  margin-top: 30px;
+  padding: clamp(28px, 4vw, 48px);
+  border: 1px solid var(--color-border);
+  border-radius: 22px;
+  background: linear-gradient(
+    135deg,
+    var(--color-surface),
+    var(--color-surface-elevated)
+  );
+}
+
+.heroCard::before,
+.heroCard::after {
+  content: "";
+  position: absolute;
+  width: 260px;
+  height: 260px;
+  border-radius: 50%;
+  opacity: 0.13;
+  filter: blur(55px);
+  pointer-events: none;
+}
+
+.heroCard::before {
+  top: -160px;
+  right: 80px;
+  background: var(--color-brand-purple);
+}
+.heroCard::after {
+  right: -140px;
+  bottom: -180px;
+  background: var(--color-brand-cyan);
+}
+
+.heroContent,
+.heroProfile {
+  position: relative;
+  z-index: 1;
+}
+.heroContent {
+  max-width: 650px;
+}
+
+.heroLabel {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  color: var(--color-brand-cyan);
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.heroLabel svg {
+  width: 14px;
+  height: 14px;
+}
+
+.heroCard h2 {
+  max-width: 620px;
+  margin-top: 17px;
+  font-size: clamp(34px, 5vw, 58px);
+  line-height: 0.98;
+  letter-spacing: -0.055em;
+}
+
+.heroCard p {
+  max-width: 570px;
+  margin-top: 18px;
+  color: var(--color-text-secondary);
+  line-height: 1.65;
+}
+
+.heroProfile {
+  width: 210px;
+  flex: 0 0 auto;
+  display: grid;
+  justify-items: center;
+  gap: 14px;
+  padding: 25px 20px;
+  border: 1px solid var(--color-border);
+  border-radius: 18px;
+  background: var(--color-background-secondary);
+  text-align: center;
+}
+
+.heroProfile > div:last-child {
+  display: grid;
+  gap: 5px;
+}
+.heroProfile span {
+  color: var(--color-text-muted);
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+}
+.heroProfile strong {
+  color: var(--color-text-primary);
+  font-size: 15px;
+}
+.heroProfile small {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  color: var(--color-brand-cyan);
+  font-size: 10px;
+}
+.heroProfile small svg {
+  width: 12px;
+  height: 12px;
+}
+
+.discoverySection {
+  margin-top: 28px;
+}
+
+.discoveryHeading {
+  display: flex;
+  align-items: end;
+  justify-content: space-between;
+  gap: 20px;
+}
+
+.discoveryHeading h2 {
+  margin-top: 7px;
+  color: var(--color-text-primary);
+  font-size: 22px;
+  letter-spacing: -0.025em;
+}
+
+.discoveryHeading p {
+  max-width: 250px;
+  margin-bottom: 2px;
+  color: var(--color-text-muted);
+  font-size: 12px;
+  line-height: 1.45;
+  text-align: right;
+}
+
+.searchGrid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 18px;
+  margin-top: 14px;
+}
+
+.searchCard {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  min-height: 350px;
+  padding: 28px;
+  border: 1px solid var(--color-border-subtle);
+  border-radius: 18px;
+  background: var(--color-surface);
+}
+
+.searchCard:hover {
+  border-color: color-mix(
+    in srgb,
+    var(--color-brand-cyan) 55%,
+    var(--color-border)
+  );
+  transform: translateY(-2px);
+}
+
+.searchCard:nth-child(2):hover {
+  border-color: color-mix(
+    in srgb,
+    var(--color-brand-purple) 55%,
+    var(--color-border)
+  );
+}
+
+.cardIcon {
+  width: 46px;
+  height: 46px;
+  display: grid;
+  place-items: center;
+  margin-bottom: 23px;
+  color: var(--color-brand-cyan);
+  border: 1px solid var(--color-border);
+  border-radius: 13px;
+  background: var(--color-surface-elevated);
+}
+
+.searchCard:nth-child(2) .cardIcon {
+  color: var(--color-brand-purple);
+}
+.cardIcon svg {
+  width: 21px;
+  height: 21px;
+}
+
+.searchCard h2 {
+  margin-top: 9px;
+  font-size: 25px;
+  letter-spacing: -0.035em;
+}
+.searchCard p {
+  min-height: 48px;
+  margin-top: 10px;
+  color: var(--color-text-muted);
+  font-size: 13px;
+  line-height: 1.55;
+}
+
+.cardMeta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 14px;
+  margin-top: auto;
+  padding-top: 22px;
+  color: var(--color-text-secondary);
+  font-size: 11px;
+}
+
+.cardMeta span {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.cardMeta svg {
+  width: 13px;
+  height: 13px;
+  color: var(--color-brand-cyan);
+}
+.searchCard:nth-child(2) .cardMeta svg {
+  color: var(--color-brand-purple);
+}
+
+.searchCard button {
+  width: 100%;
+  min-height: 48px;
+  display: inline-flex;
+  align-items: center;
+  gap: 9px;
+  justify-content: center;
+  margin-top: 16px;
+  padding: 0 17px;
+  color: var(--color-background-primary);
+  border-radius: 11px;
+  background: var(--color-brand-cyan);
+  cursor: pointer;
+  font-size: 12px;
+  font-weight: 800;
+  transition:
+    transform 0.2s ease,
+    filter 0.2s ease;
+}
+
+.searchCard button:hover {
+  filter: brightness(1.12);
+  transform: translateY(-1px);
+}
+.searchCard button:focus-visible {
+  outline: 2px solid var(--color-text-primary);
+  outline-offset: 3px;
+}
+
+.searchCard:nth-child(2) button {
+  color: var(--color-text-primary);
+  background: var(--color-brand-purple);
+}
+
+.searchCard button svg {
+  width: 14px;
+  height: 14px;
+}
+.searchCard button svg:last-child {
+  margin-left: auto;
+}
+
+.profilePanel {
+  margin-top: 18px;
+  padding: 27px;
+  border: 1px solid var(--color-border-subtle);
+  border-radius: 18px;
+  background: var(--color-surface);
+}
+
+.panelHeading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+}
+
+.panelHeading h2 {
+  margin-top: 6px;
+  font-size: 21px;
+}
+.complete {
+  padding: 8px 11px;
+}
+
+.profileRow {
+  display: grid;
+  grid-template-columns: auto minmax(130px, 1fr) minmax(150px, 1fr) minmax(
+      150px,
+      1fr
+    );
+  align-items: center;
+  gap: 20px;
+  margin-top: 22px;
+  padding-top: 22px;
+  border-top: 1px solid var(--color-border-subtle);
+}
+
+.profileDetail {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 0;
+}
+
+.profileDetail > svg {
+  width: 17px;
+  height: 17px;
+  color: var(--color-brand-blue);
+}
+.profileDetail > div {
+  min-width: 0;
+  display: grid;
+  gap: 4px;
+}
+.profileDetail span {
+  color: var(--color-text-muted);
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+.profileDetail strong {
+  overflow: hidden;
+  color: var(--color-text-secondary);
+  font-size: 12px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.statePage {
+  min-height: 100vh;
+  display: grid;
+  place-items: center;
+  padding: 24px;
+  color: var(--color-text-primary);
+  background: var(--color-background-primary);
+}
+
+.stateCard {
+  width: min(430px, 100%);
+  padding: 38px;
+  color: var(--color-text-primary);
+  border: 1px solid var(--color-border);
+  border-radius: 18px;
+  background: var(--color-surface);
+  text-align: center;
+}
+
+.stateCard > svg {
+  width: 29px;
+  height: 29px;
+  color: var(--color-brand-cyan);
+}
+.stateCard h1 {
+  margin-top: 16px;
+  font-size: 23px;
+}
+.stateCard p {
+  margin-top: 10px;
+  color: var(--color-text-muted);
+  line-height: 1.55;
+}
+.stateCard a {
+  display: inline-block;
+  margin-top: 20px;
+  color: var(--color-brand-cyan);
+  font-weight: 700;
+}
+
+.spinner {
+  animation: spin 1s linear infinite;
+}
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@media (max-width: 900px) {
+  .sidebar {
+    width: 76px;
+    align-items: center;
+    padding-inline: 12px;
+  }
+  .sidebarTitle,
+  .navigation span,
+  .sidebarProfile > div:last-child {
+    display: none;
+  }
+  .navigation {
+    margin-top: 0;
+  }
+  .navigation button {
+    width: 48px;
+    justify-content: center;
+    padding: 0;
+  }
+  .sidebarProfile {
+    padding: 14px 0 0;
+  }
+  .heroProfile {
+    width: 185px;
+  }
+}
+
+@media (max-width: 700px) {
+  .content {
+    padding: 30px 18px 48px;
+  }
+  .welcome {
+    align-items: start;
+  }
+  .roleBadge {
+    margin-top: 3px;
+  }
+  .heroCard {
+    display: block;
+  }
+  .heroProfile {
+    width: 100%;
+    grid-template-columns: auto 1fr;
+    justify-items: start;
+    align-items: center;
+    margin-top: 28px;
+    text-align: left;
+  }
+  .heroProfile small {
+    justify-content: start;
+  }
+  .searchGrid {
+    grid-template-columns: 1fr;
+  }
+  .profileRow {
+    grid-template-columns: auto 1fr;
+  }
+  .profileDetail {
+    grid-column: 1 / -1;
+  }
+}
+
+@media (max-width: 500px) {
+  .sidebar {
+    display: none;
+  }
+  .welcome {
+    display: block;
+  }
+  .roleBadge {
+    margin-top: 18px;
+  }
+  .heroCard {
+    margin-top: 24px;
+    padding: 27px 22px;
+  }
+  .heroCard h2 {
+    font-size: 37px;
+  }
+  .panelHeading {
+    align-items: start;
+  }
+  .complete {
+    max-width: 120px;
+  }
+}
