@@ -21,7 +21,12 @@ import { TrainerDocumentsStep } from '../../components/TrainerDocumentsStep/Trai
 import { useOnboardingFlow } from '../../hooks/useOnboardingFlow'
 import styles from './OnboardingPage.module.css'
 
-const stepIcons = [CircleUserRound, MapPin, Settings2, BadgeCheck] as const
+const stepIcons = {
+  profile: CircleUserRound,
+  'trainer-documents': BadgeCheck,
+  address: MapPin,
+  preferences: Settings2,
+} as const
 
 function roleFromPath(): UserRole {
   if (window.location.pathname.endsWith('/trainer')) return 'TRAINER'
@@ -39,7 +44,7 @@ export function OnboardingPage() {
   const role = roleFromPath()
   const flow = useOnboardingFlow(role)
   const activeStep = flow.steps[flow.stepIndex]
-  const ActiveIcon = stepIcons[flow.stepIndex]
+  const ActiveIcon = stepIcons[activeStep.id]
   const isLastStep = flow.stepIndex === flow.steps.length - 1
   const progressPercent = ((flow.stepIndex + 1) / flow.steps.length) * 100
 
@@ -74,7 +79,7 @@ export function OnboardingPage() {
 
         <nav className={styles.timeline} aria-label="Onboarding progress">
           {flow.steps.map((step, index) => {
-            const Icon = stepIcons[index]
+            const Icon = stepIcons[step.id]
             const isComplete = index < flow.stepIndex
             const isActive = index === flow.stepIndex
             return (
@@ -146,8 +151,11 @@ export function OnboardingPage() {
               {activeStep.id === 'trainer-documents' && (
                 <TrainerDocumentsStep
                   cv={flow.cv}
+                  generatedCv={flow.generatedCv}
                   licence={flow.licence}
+                  profile={flow.profile}
                   onChange={flow.setDocument}
+                  onGenerated={flow.setGeneratedCv}
                 />
               )}
             </div>

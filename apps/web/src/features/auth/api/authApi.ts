@@ -7,7 +7,6 @@ import type {
   VerifyEmailRequest,
 } from "@swefton/shared/auth";
 import { authEndpoints } from "@swefton/shared/auth";
-import { onboardingEndpoints } from "@swefton/shared/onboarding";
 import { httpClient } from "../../../core/http/httpClient";
 
 type AuthResponsePayload = AuthResponse & {
@@ -47,40 +46,13 @@ export function normalizeAuthResponse(
   };
 }
 
-function isOnboardingComplete(payload: Record<string, unknown>): boolean {
-  const value =
-    payload.onboardingCompleted ??
-    payload.onboardingComplete ??
-    payload.onboarding_completed ??
-    payload.onboarding_complete;
-
-  return value === true || value === 1 || value === "true" || value === "1";
-}
-
 export const authApi: AuthApi = {
   async login(payload: LoginRequest) {
     const { data } = await httpClient.post<AuthResponsePayload>(
       authEndpoints.login,
       payload,
     );
-    const response = normalizeAuthResponse(data);
-
-    if (!response.onboardingCompleted) {
-      try {
-        const onboarding = await httpClient.get<Record<string, unknown>>(
-          onboardingEndpoints.onboarding,
-        );
-
-        return {
-          ...response,
-          onboardingCompleted: isOnboardingComplete(onboarding.data),
-        };
-      } catch {
-        // An incomplete user may not have an onboarding record yet.
-      }
-    }
-
-    return response;
+    return normalizeAuthResponse(data);
   },
 
   async register(payload: RegisterRequest) {

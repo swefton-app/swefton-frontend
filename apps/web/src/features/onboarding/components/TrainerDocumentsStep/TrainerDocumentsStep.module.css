@@ -13,45 +13,76 @@
 .trustNote p { margin: 0; font-size: 10px; line-height: 1.55; }
 .trustNote strong { color: #d8e6df; }
 
-.uploadGrid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+.cvSection { display: grid; gap: 13px; }
+.sectionHeading { display: flex; align-items: end; justify-content: space-between; gap: 15px; }
+.sectionHeading div { display: grid; gap: 4px; }
+.sectionHeading span { color: #50c9ea; font-size: 8px; font-weight: 800; letter-spacing: .12em; text-transform: uppercase; }
+.sectionHeading h3 { margin: 0; color: #e7edf7; font-size: 13px; }
+.sectionHeading small { display: flex; align-items: center; gap: 5px; color: #55d6aa; font-size: 9px; font-weight: 750; }
+.sectionHeading small svg { width: 13px; }
 
-.uploadCard {
-  min-height: 195px;
+.cvChoices { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.choiceCard {
+  min-height: 168px;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 8px;
-  padding: 22px 15px;
+  gap: 7px;
+  padding: 18px 14px;
+  color: inherit;
   text-align: center;
   border: 1px dashed #384355;
-  border-radius: 18px;
+  border-radius: 17px;
   background: rgba(9, 12, 18, .7);
   cursor: pointer;
   transition: transform .2s, border-color .2s, background .2s;
 }
 
-.uploadCard:hover { transform: translateY(-2px); border-color: #3b96b6; background: #0e151f; }
+.choiceCard:hover { transform: translateY(-2px); border-color: #3b96b6; background: #0e151f; }
+.choiceCard.selectedChoice { border-style: solid; border-color: rgba(73, 205, 161, .42); background: rgba(29, 128, 96, .07); }
+.choiceCard input { position: absolute; width: 1px; height: 1px; opacity: 0; pointer-events: none; }
+.choiceCard strong { color: #e7edf7; font-size: 11px; }
+.choiceCard small { max-width: 210px; overflow: hidden; color: #6d798c; font-size: 9px; line-height: 1.45; text-overflow: ellipsis; white-space: nowrap; }
+.createChoice { font: inherit; }
+
+.uploadCard {
+  min-height: 86px;
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 13px;
+  padding: 15px;
+  border: 1px dashed #384355;
+  border-radius: 16px;
+  background: rgba(9, 12, 18, .7);
+  cursor: pointer;
+  transition: border-color .2s, background .2s;
+}
+
+.uploadCard:hover { border-color: #3b96b6; background: #0e151f; }
 .uploadCard.uploaded { border-style: solid; border-color: rgba(73, 205, 161, .34); background: rgba(29, 128, 96, .06); }
 .uploadCard input { position: absolute; width: 1px; height: 1px; opacity: 0; pointer-events: none; }
-.uploadCard strong { color: #e7edf7; font-size: 12px; }
-.uploadCard strong b { color: #3ec6e9; }
-.uploadCard small { width: 100%; overflow: hidden; color: #6d798c; font-size: 10px; text-overflow: ellipsis; white-space: nowrap; }
+.uploadCopy { min-width: 0; display: grid; gap: 5px; }
+.uploadCopy strong { color: #e7edf7; font-size: 11px; }
+.uploadCopy strong b { color: #3ec6e9; }
+.uploadCopy small { overflow: hidden; color: #6d798c; font-size: 9px; text-overflow: ellipsis; white-space: nowrap; }
 
 .documentIcon {
-  width: 50px;
-  height: 50px;
+  width: 44px;
+  height: 44px;
   display: grid;
+  flex: 0 0 auto;
   place-items: center;
-  margin-bottom: 3px;
   color: #50c9ea;
-  border-radius: 16px;
+  border-radius: 14px;
   background: rgba(32, 163, 204, .09);
 }
 
+.selectedChoice .documentIcon,
 .uploaded .documentIcon { color: #55d6aa; background: rgba(54, 190, 144, .1); }
-.documentIcon svg { width: 23px; height: 23px; }
-.uploadAction { display: inline-flex; align-items: center; gap: 6px; margin-top: 4px; color: #aec0d4; font-size: 10px; font-weight: 750; }
+.documentIcon svg { width: 20px; height: 20px; }
+.uploadAction { display: inline-flex; align-items: center; gap: 6px; color: #aec0d4; font-size: 9px; font-weight: 750; }
 .uploadAction svg { width: 13px; height: 13px; }
 
 .requirements { display: flex; flex-direction: column; gap: 8px; padding: 14px 16px; color: #748094; border-radius: 14px; background: rgba(255, 255, 255, .025); font-size: 10px; }
@@ -59,7 +90,29 @@
 .requirements span { display: flex; align-items: center; gap: 7px; }
 .requirements svg { width: 13px; height: 13px; color: #42bd96; }
 
-@media (max-width: 520px) {
-  .uploadGrid { grid-template-columns: 1fr; }
-  .uploadCard { min-height: 165px; }
+.builderOverlay {
+  position: fixed;
+  z-index: 100;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  padding: 22px;
+  background: rgba(2, 3, 6, .82);
+  backdrop-filter: blur(10px);
+}
+
+.builderHidden { display: none; }
+
+.builderModal { position: relative; width: min(1420px, 100%); max-height: calc(100vh - 44px); overflow: auto; border: 1px solid #343b49; border-radius: 22px; background: #050608; box-shadow: 0 34px 100px rgba(0, 0, 0, .65); }
+.closeBuilder { position: sticky; z-index: 5; top: 14px; float: right; width: 38px; height: 38px; display: grid; place-items: center; margin: 14px 14px -52px 0; color: #aeb6c5; border: 1px solid #343b49; border-radius: 11px; background: #141925; cursor: pointer; }
+.closeBuilder:hover { color: #f6f8fc; border-color: #02d9f5; }
+.closeBuilder svg { width: 17px; }
+
+@media (max-width: 620px) {
+  .cvChoices { grid-template-columns: 1fr; }
+  .choiceCard { min-height: 145px; }
+  .uploadCard { grid-template-columns: auto 1fr; }
+  .uploadCard > .uploadAction { grid-column: 2; }
+  .builderOverlay { padding: 0; }
+  .builderModal { max-height: 100vh; border: 0; border-radius: 0; }
 }

@@ -1,7 +1,9 @@
 import {
   onboardingEndpoints,
   type ImageResponse,
+  type ImageType,
   type OnboardingResponse,
+  type TrainerDocumentResponse,
 } from "@swefton/shared/onboarding";
 import { httpClient } from "../../../core/http/httpClient";
 
@@ -55,10 +57,47 @@ export const dashboardApi = {
   },
 
   async getProfileImage(): Promise<ImageResponse | null> {
+    const data = await this.getImages();
+
+    return data.find((image) => image.type === "PROFILE") ?? null;
+  },
+
+  async getImages(): Promise<ImageResponse[]> {
     const { data } = await httpClient.get<ImageResponse[]>(
       onboardingEndpoints.images,
     );
+    return data;
+  },
 
-    return data.find((image) => image.type === "PROFILE") ?? null;
+  async uploadImage(file: File, type: ImageType, position: number) {
+    const formData = new FormData();
+    formData.append("file", file);
+    formData.append(
+      "image",
+      new Blob([JSON.stringify({ type, position })], {
+        type: "application/json",
+      }),
+    );
+
+    const { data } = await httpClient.post<ImageResponse>(
+      onboardingEndpoints.images,
+      formData,
+    );
+    return data;
+  },
+
+  async getTrainerDocuments(): Promise<TrainerDocumentResponse[]> {
+    const { data } = await httpClient.get<TrainerDocumentResponse[]>(
+      onboardingEndpoints.trainerDocuments,
+    );
+    return data;
+  },
+
+  async downloadTrainerDocument(documentId: number): Promise<Blob> {
+    const { data } = await httpClient.get<Blob>(
+      `${onboardingEndpoints.trainerDocuments}/${documentId}/download`,
+      { responseType: "blob" },
+    );
+    return data;
   },
 };

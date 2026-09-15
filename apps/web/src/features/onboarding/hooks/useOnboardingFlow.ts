@@ -9,6 +9,7 @@ import {
   type FieldErrors,
   type OnboardingPrefill,
   type OnboardingRequest,
+  type TrainerDocumentResponse,
   type UserAddressInput,
   type UserPreferencesInput,
   type UserProfileInput,
@@ -24,6 +25,15 @@ interface UploadedAssets {
   avatar: boolean
   cv: boolean
   licence: boolean
+}
+
+function getTrainerDocumentsError(cvReady: boolean, licenceReady: boolean) {
+  if (!cvReady && !licenceReady) {
+    return 'Upload or create your CV, then add your professional licence to continue.'
+  }
+  if (!cvReady) return 'Upload or create your CV to continue.'
+  if (!licenceReady) return 'Add your professional licence to continue.'
+  return ''
 }
 
 function initialProfile(prefill?: OnboardingPrefill): UserProfileInput {
@@ -86,6 +96,7 @@ export function useOnboardingFlow(role: UserRole) {
   const [profileImage, setProfileImageState] = useState<File | null>(null)
   const [googlePictureUrl, setGooglePictureUrl] = useState(prefill?.pictureUrl)
   const [cv, setCvState] = useState<File | null>(null)
+  const [generatedCv, setGeneratedCvState] = useState<TrainerDocumentResponse | null>(null)
   const [licence, setLicenceState] = useState<File | null>(null)
   const [profileErrors, setProfileErrors] = useState<FieldErrors<UserProfileInput>>({})
   const [addressErrors, setAddressErrors] = useState<FieldErrors<UserAddressInput>>({})
@@ -114,9 +125,18 @@ export function useOnboardingFlow(role: UserRole) {
       return
     }
     setError('')
-    if (type === 'cv') setCvState(file)
-    else setLicenceState(file)
+    if (type === 'cv') {
+      setCvState(file)
+      setGeneratedCvState(null)
+    } else setLicenceState(file)
     uploaded.current[type] = false
+  }
+
+  const setGeneratedCv = (document: TrainerDocumentResponse) => {
+    setError('')
+    setCvState(null)
+    setGeneratedCvState(document)
+    uploaded.current.cv = true
   }
 
   const removeGooglePicture = () => {
@@ -141,8 +161,9 @@ export function useOnboardingFlow(role: UserRole) {
       setPreferencesErrors(errors)
       return !hasFieldErrors(errors)
     }
-    if (!cv || !licence) {
-      setError('Add both your CV and professional licence to continue.')
+    const documentsError = getTrainerDocumentsError(Boolean(cv || generatedCv), Boolean(licence))
+    if (documentsError) {
+      setError(documentsError)
       return false
     }
     return true
@@ -161,9 +182,11 @@ export function useOnboardingFlow(role: UserRole) {
       }
 
       if (role === 'TRAINER') {
-        if (!cv || !licence) throw new Error('Your CV and licence are required.')
+        const documentsError = getTrainerDocumentsError(Boolean(cv || generatedCv), Boolean(licence))
+        if (documentsError) throw new Error(documentsError)
+        if (!licence) throw new Error('Add your professional licence to continue.')
 
-        if (!uploaded.current.cv) {
+        if (!uploaded.current.cv && cv) {
           setProgress('Uploading your CV…')
           await onboardingApi.uploadTrainerDocument(cv, 'CV')
           uploaded.current.cv = true
@@ -212,6 +235,7 @@ export function useOnboardingFlow(role: UserRole) {
     back,
     cv,
     error,
+    generatedCv,
     googlePictureUrl,
     licence,
     next,
@@ -225,6 +249,7 @@ export function useOnboardingFlow(role: UserRole) {
     removeGooglePicture,
     setAddress,
     setDocument,
+    setGeneratedCv,
     setPreferences,
     setProfile,
     setProfileImage,

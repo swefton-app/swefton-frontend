@@ -37,7 +37,6 @@ export const onboardingApi = {
     const { data } = await httpClient.post<ImageResponse>(
       onboardingEndpoints.images,
       formData,
-      { headers: { 'Content-Type': 'multipart/form-data' } },
     )
     return data
   },
@@ -45,12 +44,10 @@ export const onboardingApi = {
   async uploadTrainerDocument(file: File, type: TrainerDocumentType) {
     const formData = new FormData()
     formData.append('file', file)
-    formData.append('type', type)
 
     const { data } = await httpClient.post<TrainerDocumentResponse>(
-      onboardingEndpoints.trainerDocuments,
+      `${onboardingEndpoints.trainerDocuments}?type=${encodeURIComponent(type)}`,
       formData,
-      { headers: { 'Content-Type': 'multipart/form-data' } },
     )
     return data
   },
