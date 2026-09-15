@@ -4,7 +4,8 @@
   "version": "0.0.0",
   "type": "module",
   "scripts": {
-    "dev": "infisical run --env=dev --path=/ -- vite",
+    "dev": "vite",
+    "dev:infisical": "infisical run --env=dev --path=/ -- vite",
     "build": "tsc -b && vite build",
     "lint": "eslint .",
     "preview": "vite preview"

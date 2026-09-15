@@ -55,7 +55,7 @@ export interface ImageResponse {
   updatedAt: string | null
 }
 
-export type TrainerDocumentType = 'LICENCE' | 'CV' | 'OTHER'
+export type TrainerDocumentType = 'LICENCE' | 'LICENSE' | 'CV' | 'OTHER'
 
 export interface TrainerDocumentResponse {
   id: number

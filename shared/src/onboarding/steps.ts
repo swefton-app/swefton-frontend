@@ -38,9 +38,11 @@ const trainerDocumentsStep: OnboardingStep = {
   id: 'trainer-documents',
   eyebrow: 'Professional details',
   title: 'Verify your expertise',
-  description: 'Add your CV and professional licence so members can book confidently.',
+  description: 'Upload or create your CV, then add your professional licence.',
 }
 
 export function getOnboardingSteps(role: UserRole): readonly OnboardingStep[] {
-  return role === 'TRAINER' ? [...baseSteps, trainerDocumentsStep] : baseSteps
+  return role === 'TRAINER'
+    ? [baseSteps[0], trainerDocumentsStep, ...baseSteps.slice(1)]
+    : baseSteps
 }

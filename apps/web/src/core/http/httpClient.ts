@@ -17,6 +17,18 @@ interface RetryableRequest extends InternalAxiosRequestConfig {
   _retry?: boolean
 }
 
+function isJsonRequestBody(data: unknown): boolean {
+  if (data === null || typeof data !== 'object') return false
+
+  return !(
+    data instanceof FormData ||
+    data instanceof Blob ||
+    data instanceof ArrayBuffer ||
+    ArrayBuffer.isView(data) ||
+    data instanceof URLSearchParams
+  )
+}
+
 class HttpClient {
   private static instance: AxiosInstance
   private static refreshRequest: Promise<TokenResponse> | null = null
@@ -26,7 +38,6 @@ class HttpClient {
       HttpClient.instance = axios.create({
         baseURL: API_BASE_URL,
         timeout: 15_000,
-        headers: { 'Content-Type': 'application/json' },
       })
 
       HttpClient.configureInterceptors(HttpClient.instance)
@@ -39,7 +50,16 @@ class HttpClient {
     client.interceptors.request.use((requestConfig) => {
       const accessToken = tokenStorage.getAccessToken()
 
-      if (accessToken) {
+      if (requestConfig.data instanceof FormData) {
+        requestConfig.headers.delete('Content-Type')
+      } else if (
+        isJsonRequestBody(requestConfig.data) &&
+        !requestConfig.headers.has('Content-Type')
+      ) {
+        requestConfig.headers.set('Content-Type', 'application/json')
+      }
+
+      if (accessToken && !requestConfig.headers.has('Authorization')) {
         requestConfig.headers.Authorization = `Bearer ${accessToken}`
       }
 
