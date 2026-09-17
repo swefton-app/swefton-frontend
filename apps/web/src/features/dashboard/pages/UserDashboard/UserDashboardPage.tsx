@@ -151,7 +151,7 @@ function CameraDialog({ busy, open, onCapture, onClose }: CameraDialogProps) {
             .enumerateDevices()
             .catch(() => []);
           if (!devices.some((device) => device.kind === "videoinput")) {
-            return "Windows is not detecting a camera. Enable or connect a webcam, then retry.";
+            return "Your browser is not detecting a camera. Enable or connect a webcam, then retry.";
           }
           return "Your camera is being used by another app. Close it there, then retry.";
         }
@@ -371,6 +371,16 @@ function TrainerDashboard({
   const location = [dashboard.address.city, dashboard.address.country]
     .filter(Boolean)
     .join(", ");
+  const galleryPreview = useMemo(
+    () =>
+      [...gallery]
+        .sort(
+          (left, right) =>
+            Date.parse(right.createdAt) - Date.parse(left.createdAt),
+        )
+        .slice(0, 5),
+    [gallery],
+  );
 
   useEffect(() => {
     let active = true;
@@ -707,9 +717,14 @@ function TrainerDashboard({
 
                 {gallery.length ? (
                   <div className={styles.galleryGrid}>
-                    {gallery.map((image) => (
+                    {galleryPreview.map((image) => (
                       <figure key={image.id}>
-                        <img src={image.url} alt={image.originalName || "Training session"} />
+                        <img
+                          src={image.url}
+                          alt={image.originalName || "Training session"}
+                          loading="lazy"
+                          decoding="async"
+                        />
                       </figure>
                     ))}
                     <button
@@ -723,7 +738,7 @@ function TrainerDashboard({
                     </button>
                   </div>
                 ) : (
-                  <label className={styles.emptyGallery}>
+                  <div className={styles.emptyGallery}>
                     <span className={styles.uploadIcon}>
                       <UploadCloud aria-hidden="true" />
                     </span>
@@ -733,17 +748,31 @@ function TrainerDashboard({
                       moments to build trust.
                     </span>
                     <small>JPG, PNG or WEBP</small>
-                    <input
-                      type="file"
-                      accept="image/*"
-                      multiple
-                      disabled={uploading}
-                      onChange={(event) => {
-                        void uploadGallery(event.target.files);
-                        event.target.value = "";
-                      }}
-                    />
-                  </label>
+                    <div className={styles.emptyGalleryActions}>
+                      <button
+                        type="button"
+                        disabled={uploading}
+                        onClick={() => setCameraOpen(true)}
+                      >
+                        <Camera aria-hidden="true" />
+                        <span>Add a moment</span>
+                      </button>
+                      <label>
+                        <Images aria-hidden="true" />
+                        <span>Choose photos</span>
+                        <input
+                          type="file"
+                          accept="image/*"
+                          multiple
+                          disabled={uploading}
+                          onChange={(event) => {
+                            void uploadGallery(event.target.files);
+                            event.target.value = "";
+                          }}
+                        />
+                      </label>
+                    </div>
+                  </div>
                 )}
                 {uploadMessage && (
                   <p className={styles.uploadMessage} role="status">
