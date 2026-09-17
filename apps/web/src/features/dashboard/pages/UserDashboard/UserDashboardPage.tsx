@@ -42,6 +42,8 @@ import { authApi } from "../../../auth/api/authApi";
 import { dashboardApi } from "../../api/dashboardApi";
 import styles from "./UserDashboardPage.module.css";
 
+const MAX_PROFILE_IMAGE_SIZE_BYTES = 10 * 1024 * 1024;
+
 function fullName(profile: OnboardingResponse["profile"]) {
   return (
     profile.displayName?.trim() ||
@@ -101,6 +103,15 @@ function CameraDialog({ busy, open, onCapture, onClose }: CameraDialogProps) {
   const [cameraError, setCameraError] = useState<string | null>(null);
   const [cameraReady, setCameraReady] = useState(false);
   const [cameraAttempt, setCameraAttempt] = useState(0);
+
+  useEffect(() => {
+    if (!open) return;
+    const previousOverflow = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    return () => {
+      document.body.style.overflow = previousOverflow;
+    };
+  }, [open]);
 
   useEffect(() => {
     if (!open) return;
@@ -1017,6 +1028,10 @@ export function UserDashboardPage() {
   const uploadProfileImage = async (files: FileList | null) => {
     const file = files?.[0];
     if (!file) return;
+    if (file.size > MAX_PROFILE_IMAGE_SIZE_BYTES) {
+      setProfileUploadMessage("Profile images must be 10 MB or smaller.");
+      return;
+    }
     if (!file.type.startsWith("image/")) {
       setProfileUploadMessage("Choose an image file for your profile.");
       return;
