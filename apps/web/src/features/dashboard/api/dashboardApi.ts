@@ -5,6 +5,7 @@ import {
   type OnboardingResponse,
   type TrainerDocumentResponse,
 } from "@swefton/shared/onboarding";
+import { config } from "../../../config";
 import { httpClient } from "../../../core/http/httpClient";
 
 type OnboardingPayload = Partial<OnboardingResponse> & {
@@ -14,6 +15,20 @@ type OnboardingPayload = Partial<OnboardingResponse> & {
 function isOnboardingComplete(data: OnboardingPayload) {
   const value = data.onboardingCompleted ?? data.onboarding_completed;
   return value === true || value === 1 || value === "true" || value === "1";
+}
+
+function resolveImageUrl(url: string) {
+  if (/^(?:blob:|data:|https?:\/\/)/i.test(url)) return url;
+
+  if (/^https?:\/\//i.test(config.apiUrl)) {
+    return new URL(url, new URL(config.apiUrl).origin).toString();
+  }
+
+  return url;
+}
+
+function withResolvedImageUrl(image: ImageResponse): ImageResponse {
+  return { ...image, url: resolveImageUrl(image.url) };
 }
 
 export const dashboardApi = {
@@ -66,7 +81,7 @@ export const dashboardApi = {
     const { data } = await httpClient.get<ImageResponse[]>(
       onboardingEndpoints.images,
     );
-    return data;
+    return data.map(withResolvedImageUrl);
   },
 
   async uploadImage(file: File, type: ImageType, position: number) {
@@ -83,7 +98,7 @@ export const dashboardApi = {
       onboardingEndpoints.images,
       formData,
     );
-    return data;
+    return withResolvedImageUrl(data);
   },
 
   async getTrainerDocuments(): Promise<TrainerDocumentResponse[]> {

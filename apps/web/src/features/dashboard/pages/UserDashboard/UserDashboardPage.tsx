@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import type {
   ImageResponse,
   OnboardingResponse,
@@ -82,7 +82,261 @@ interface RoleDashboardProps {
   profileImageUrl: string | null;
   images: ImageResponse[];
   onProfileImageError: () => void;
+  onProfileImageChange: (files: FileList | null) => void;
+  profileUploading: boolean;
+  profileUploadMessage: string | null;
   onSignOut: () => void;
+}
+
+interface CameraDialogProps {
+  busy: boolean;
+  open: boolean;
+  onCapture: (file: File) => Promise<boolean>;
+  onClose: () => void;
+}
+
+function CameraDialog({ busy, open, onCapture, onClose }: CameraDialogProps) {
+  const videoRef = useRef<HTMLVideoElement>(null);
+  const streamRef = useRef<MediaStream | null>(null);
+  const [cameraError, setCameraError] = useState<string | null>(null);
+  const [cameraReady, setCameraReady] = useState(false);
+  const [cameraAttempt, setCameraAttempt] = useState(0);
+
+  useEffect(() => {
+    if (!open) return;
+
+    let active = true;
+    const stopCamera = () => {
+      streamRef.current?.getTracks().forEach((track) => track.stop());
+      streamRef.current = null;
+    };
+
+    if (!window.isSecureContext) {
+      queueMicrotask(() => {
+        if (active) {
+          setCameraError(
+            "Live camera access requires HTTPS or localhost. Open Swefton securely, or take/choose a photo below.",
+          );
+        }
+      });
+      return stopCamera;
+    }
+
+    if (!navigator.mediaDevices?.getUserMedia) {
+      queueMicrotask(() => {
+        if (active) {
+          setCameraError(
+            "Live camera access is not supported by this browser. Take or choose a photo below.",
+          );
+        }
+      });
+      return stopCamera;
+    }
+
+    const cameraErrorMessage = async (error: unknown) => {
+      if (!(error instanceof DOMException)) {
+        return "The camera could not start. Check your camera and try again.";
+      }
+
+      switch (error.name) {
+        case "NotAllowedError":
+        case "SecurityError":
+          return "Camera permission is off. Enable it in your browser's site settings, then retry.";
+        case "NotFoundError":
+        case "DevicesNotFoundError":
+          return "No camera was found on this device. Take or choose a photo below.";
+        case "NotReadableError":
+        case "TrackStartError": {
+          const devices = await navigator.mediaDevices
+            .enumerateDevices()
+            .catch(() => []);
+          if (!devices.some((device) => device.kind === "videoinput")) {
+            return "Windows is not detecting a camera. Enable or connect a webcam, then retry.";
+          }
+          return "Your camera is being used by another app. Close it there, then retry.";
+        }
+        case "OverconstrainedError":
+        case "ConstraintNotSatisfiedError":
+          return "This camera does not support the requested mode. Retry or choose a photo below.";
+        default:
+          return "The camera could not start. Check your browser camera settings and retry.";
+      }
+    };
+
+    const startCamera = async () => {
+      try {
+        let stream: MediaStream;
+        try {
+          stream = await navigator.mediaDevices.getUserMedia({
+            audio: false,
+            video: { facingMode: { ideal: "environment" } },
+          });
+        } catch (error) {
+          if (
+            error instanceof DOMException &&
+            (error.name === "OverconstrainedError" ||
+              error.name === "ConstraintNotSatisfiedError" ||
+              error.name === "NotReadableError" ||
+              error.name === "TrackStartError")
+          ) {
+            stream = await navigator.mediaDevices.getUserMedia({
+              audio: false,
+              video: true,
+            });
+          } else {
+            throw error;
+          }
+        }
+
+        if (!active) {
+          stream.getTracks().forEach((track) => track.stop());
+          return;
+        }
+        streamRef.current = stream;
+        if (videoRef.current) {
+          videoRef.current.srcObject = stream;
+          void videoRef.current.play().catch(() => {
+            // The video element will retry through autoplay once metadata is ready.
+          });
+        }
+      } catch (error) {
+        const message = await cameraErrorMessage(error);
+        if (active) setCameraError(message);
+      }
+    };
+
+    // Deferring startup prevents React Strict Mode's development-only effect
+    // replay from opening the same webcam twice at the same time.
+    const startTimer = window.setTimeout(() => {
+      void startCamera();
+    }, 0);
+
+    return () => {
+      active = false;
+      window.clearTimeout(startTimer);
+      stopCamera();
+    };
+  }, [cameraAttempt, open]);
+
+  useEffect(() => {
+    if (!open) return;
+    const closeOnEscape = (event: KeyboardEvent) => {
+      if (event.key === "Escape" && !busy) {
+        setCameraError(null);
+        setCameraReady(false);
+        onClose();
+      }
+    };
+    document.addEventListener("keydown", closeOnEscape);
+    return () => document.removeEventListener("keydown", closeOnEscape);
+  }, [busy, onClose, open]);
+
+  if (!open) return null;
+
+  const closeCamera = () => {
+    setCameraError(null);
+    setCameraReady(false);
+    onClose();
+  };
+
+  const retryCamera = () => {
+    setCameraError(null);
+    setCameraReady(false);
+    setCameraAttempt((attempt) => attempt + 1);
+  };
+
+  const takePhoto = async () => {
+    const video = videoRef.current;
+    if (!video?.videoWidth || !video.videoHeight) return;
+
+    const canvas = document.createElement("canvas");
+    canvas.width = video.videoWidth;
+    canvas.height = video.videoHeight;
+    canvas.getContext("2d")?.drawImage(video, 0, 0);
+    const blob = await new Promise<Blob | null>((resolve) =>
+      canvas.toBlob(resolve, "image/jpeg", 0.92),
+    );
+    if (!blob) {
+      setCameraError("We could not capture that photo. Please try again.");
+      return;
+    }
+
+    const saved = await onCapture(
+      new File([blob], `moment-${Date.now()}.jpg`, { type: "image/jpeg" }),
+    );
+    if (saved) closeCamera();
+  };
+
+  return (
+    <div className={styles.cameraBackdrop} role="presentation" onMouseDown={() => !busy && closeCamera()}>
+      <section
+        className={styles.cameraDialog}
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="camera-title"
+        onMouseDown={(event) => event.stopPropagation()}
+      >
+        <div className={styles.cameraHeading}>
+          <div>
+            <span className={styles.eyebrow}>New gallery moment</span>
+            <h2 id="camera-title">Take a photo</h2>
+          </div>
+          <button type="button" onClick={closeCamera} disabled={busy} aria-label="Close camera">
+            <X aria-hidden="true" />
+          </button>
+        </div>
+
+        <div className={styles.cameraPreview}>
+          <video
+            ref={videoRef}
+            autoPlay
+            muted
+            playsInline
+            onCanPlay={() => setCameraReady(true)}
+          />
+          {!cameraReady && !cameraError && (
+            <div className={styles.cameraLoading}>
+              <LoaderCircle className={styles.spinner} aria-hidden="true" />
+              <span>Starting your camera…</span>
+            </div>
+          )}
+          {cameraError && (
+            <div className={styles.cameraLoading} role="status">
+              <Camera aria-hidden="true" />
+              <span>{cameraError}</span>
+              {window.isSecureContext && (
+                <button className={styles.cameraRetry} type="button" onClick={retryCamera}>
+                  Retry camera
+                </button>
+              )}
+            </div>
+          )}
+        </div>
+
+        <div className={styles.cameraActions}>
+          <label className={styles.cameraFallbackButton}>
+            <Images aria-hidden="true" />
+            <span>Take or choose photo</span>
+            <input
+              type="file"
+              accept="image/*"
+              capture="environment"
+              disabled={busy}
+              onChange={(event) => {
+                const file = event.target.files?.[0];
+                if (file) void onCapture(file).then((saved) => saved && closeCamera());
+                event.target.value = "";
+              }}
+            />
+          </label>
+          <button type="button" onClick={() => void takePhoto()} disabled={!cameraReady || busy}>
+            {busy ? <LoaderCircle className={styles.spinner} aria-hidden="true" /> : <Camera aria-hidden="true" />}
+            {busy ? "Saving…" : "Take photo"}
+          </button>
+        </div>
+      </section>
+    </div>
+  );
 }
 
 function TrainerDashboard({
@@ -90,6 +344,9 @@ function TrainerDashboard({
   profileImageUrl,
   images,
   onProfileImageError,
+  onProfileImageChange,
+  profileUploading,
+  profileUploadMessage,
   onSignOut,
 }: RoleDashboardProps) {
   const [gallery, setGallery] = useState(() =>
@@ -97,6 +354,7 @@ function TrainerDashboard({
   );
   const [uploading, setUploading] = useState(false);
   const [uploadMessage, setUploadMessage] = useState<string | null>(null);
+  const [cameraOpen, setCameraOpen] = useState(false);
   const [promoted, setPromoted] = useState(false);
   const [hasUnread, setHasUnread] = useState(true);
   const [cv, setCv] = useState<TrainerDocumentResponse | null>(null);
@@ -188,14 +446,14 @@ function TrainerDashboard({
     }
   };
 
-  const uploadGallery = async (files: FileList | null) => {
-    if (!files?.length) return;
+  const uploadGallery = async (files: FileList | File[] | null) => {
+    if (!files?.length) return false;
     const selected = Array.from(files).filter((file) =>
       file.type.startsWith("image/"),
     );
     if (!selected.length) {
       setUploadMessage("Choose an image file to add to your gallery.");
-      return;
+      return false;
     }
 
     setUploading(true);
@@ -210,8 +468,10 @@ function TrainerDashboard({
       setUploadMessage(
         `${uploaded.length} ${uploaded.length === 1 ? "photo" : "photos"} added successfully.`,
       );
+      return true;
     } catch {
       setUploadMessage("We could not upload that photo. Please try again.");
+      return false;
     } finally {
       setUploading(false);
     }
@@ -307,6 +567,28 @@ function TrainerDashboard({
                 <small>
                   <MapPin aria-hidden="true" /> {location || "Remote coaching"}
                 </small>
+                <label className={styles.profilePhotoButton}>
+                  {profileUploading ? (
+                    <LoaderCircle className={styles.spinner} aria-hidden="true" />
+                  ) : (
+                    <Camera aria-hidden="true" />
+                  )}
+                  <span>{profileUploading ? "Saving photo…" : "Change profile photo"}</span>
+                  <input
+                    type="file"
+                    accept="image/*"
+                    disabled={profileUploading}
+                    onChange={(event) => {
+                      onProfileImageChange(event.target.files);
+                      event.target.value = "";
+                    }}
+                  />
+                </label>
+                {profileUploadMessage && (
+                  <small className={styles.profileUploadMessage} role="status">
+                    {profileUploadMessage}
+                  </small>
+                )}
               </div>
             </div>
             <div className={styles.trainerStats}>
@@ -425,24 +707,20 @@ function TrainerDashboard({
 
                 {gallery.length ? (
                   <div className={styles.galleryGrid}>
-                    {gallery.slice(0, 5).map((image) => (
+                    {gallery.map((image) => (
                       <figure key={image.id}>
                         <img src={image.url} alt={image.originalName || "Training session"} />
                       </figure>
                     ))}
-                    <label className={styles.galleryAddTile}>
+                    <button
+                      className={styles.galleryAddTile}
+                      type="button"
+                      disabled={uploading}
+                      onClick={() => setCameraOpen(true)}
+                    >
                       <Camera aria-hidden="true" />
                       <span>Add a moment</span>
-                      <input
-                        type="file"
-                        accept="image/*"
-                        disabled={uploading}
-                        onChange={(event) => {
-                          void uploadGallery(event.target.files);
-                          event.target.value = "";
-                        }}
-                      />
-                    </label>
+                    </button>
                   </div>
                 ) : (
                   <label className={styles.emptyGallery}>
@@ -473,6 +751,13 @@ function TrainerDashboard({
                   </p>
                 )}
               </section>
+
+              <CameraDialog
+                busy={uploading}
+                open={cameraOpen}
+                onCapture={(file) => uploadGallery([file])}
+                onClose={() => setCameraOpen(false)}
+              />
 
               <section className={styles.schedulePanel}>
                 <div className={styles.panelHeading}>
@@ -645,6 +930,8 @@ export function UserDashboardPage() {
   const [dashboard, setDashboard] = useState<OnboardingResponse | null>(null);
   const [images, setImages] = useState<ImageResponse[]>([]);
   const [profileImageUrl, setProfileImageUrl] = useState<string | null>(null);
+  const [profileUploading, setProfileUploading] = useState(false);
+  const [profileUploadMessage, setProfileUploadMessage] = useState<string | null>(null);
   const [loading, setLoading] = useState(
     role === "USER" || role === "TRAINER",
   );
@@ -698,6 +985,31 @@ export function UserDashboardPage() {
     }
   };
 
+  const uploadProfileImage = async (files: FileList | null) => {
+    const file = files?.[0];
+    if (!file) return;
+    if (!file.type.startsWith("image/")) {
+      setProfileUploadMessage("Choose an image file for your profile.");
+      return;
+    }
+
+    setProfileUploading(true);
+    setProfileUploadMessage(null);
+    try {
+      const uploaded = await dashboardApi.uploadImage(file, "PROFILE", 0);
+      setImages((current) => [
+        uploaded,
+        ...current.filter((image) => image.type !== "PROFILE"),
+      ]);
+      setProfileImageUrl(uploaded.url);
+      setProfileUploadMessage("Profile photo saved.");
+    } catch {
+      setProfileUploadMessage("We could not save that photo. Please try again.");
+    } finally {
+      setProfileUploading(false);
+    }
+  };
+
   if (role === "ADMIN") {
     return <AdminDashboard onSignOut={signOut} />;
   }
@@ -745,6 +1057,9 @@ export function UserDashboardPage() {
         profileImageUrl={profileImageUrl}
         images={images}
         onProfileImageError={hideBrokenImage}
+        onProfileImageChange={(files) => void uploadProfileImage(files)}
+        profileUploading={profileUploading}
+        profileUploadMessage={profileUploadMessage}
         onSignOut={signOut}
       />
     );
@@ -907,9 +1222,28 @@ export function UserDashboardPage() {
                 <span className={styles.eyebrow}>Profile snapshot</span>
                 <h2>Your details</h2>
               </div>
-              <span className={styles.complete}>
-                <CheckCircle2 aria-hidden="true" /> Onboarding complete
-              </span>
+              <div className={styles.profilePanelActions}>
+                <label className={styles.profilePhotoButton}>
+                  {profileUploading ? (
+                    <LoaderCircle className={styles.spinner} aria-hidden="true" />
+                  ) : (
+                    <Camera aria-hidden="true" />
+                  )}
+                  <span>{profileUploading ? "Saving…" : "Change photo"}</span>
+                  <input
+                    type="file"
+                    accept="image/*"
+                    disabled={profileUploading}
+                    onChange={(event) => {
+                      void uploadProfileImage(event.target.files);
+                      event.target.value = "";
+                    }}
+                  />
+                </label>
+                <span className={styles.complete}>
+                  <CheckCircle2 aria-hidden="true" /> Onboarding complete
+                </span>
+              </div>
             </div>
             <div className={styles.profileRow}>
               <Avatar
@@ -941,6 +1275,11 @@ export function UserDashboardPage() {
                 </div>
               </div>
             </div>
+            {profileUploadMessage && (
+              <p className={styles.profileUploadMessage} role="status">
+                {profileUploadMessage}
+              </p>
+            )}
           </section>
         </main>
       </div>
