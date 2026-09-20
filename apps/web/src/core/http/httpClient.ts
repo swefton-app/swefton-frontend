@@ -71,7 +71,7 @@ class HttpClient {
       async (error: AxiosError) => {
         const request = error.config as RetryableRequest | undefined
         const isPublicAuthRequest = publicAuthEndpoints.some((path) =>
-          request?.url?.endsWith(path),
+          request?.url === path || request?.url?.startsWith(`${path}/`),
         )
         const refreshToken = tokenStorage.getRefreshToken()
 

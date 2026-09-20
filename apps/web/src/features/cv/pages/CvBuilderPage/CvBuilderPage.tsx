@@ -84,6 +84,7 @@ interface CvBuilderProps {
   embedded?: boolean
   initialData?: Partial<CvData>
   onGenerated?: (document: GenerateCvResponse) => void
+  generateCv?: (request: import('@swefton/shared/cv').GenerateCvRequest) => Promise<GenerateCvResponse>
 }
 
 function Field({ label, children, wide = false }: FieldProps) {
@@ -99,6 +100,7 @@ export function CvBuilder({
   embedded = false,
   initialData,
   onGenerated,
+  generateCv = cvApi.generate,
 }: CvBuilderProps) {
   const role = tokenStorage.getRole()
   const [data, setData] = useState<CvData>(() => ({
@@ -217,7 +219,7 @@ export function CvBuilder({
     setGenerated(null)
     setError(null)
     try {
-      const response = await cvApi.generate({ ...data, template })
+      const response = await generateCv({ ...data, template })
       setGenerated(response)
       onGenerated?.(response)
     } catch (requestError) {
@@ -233,7 +235,7 @@ export function CvBuilder({
     window.location.replace('/')
   }
 
-  if (role !== 'TRAINER') {
+  if (role !== 'TRAINER' && !embedded) {
     return (
       <main className={styles.accessPage}>
         <section><h1>Trainer access required</h1><p>The CV builder is available to trainer accounts.</p><a href="/userDashboard">Back to dashboard</a></section>

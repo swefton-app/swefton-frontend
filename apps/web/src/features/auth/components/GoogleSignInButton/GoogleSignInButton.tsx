@@ -11,7 +11,7 @@ import styles from './GoogleSignInButton.module.css'
 
 interface GoogleSignInButtonProps {
   role?: RoleCode
-  onAuthenticated: (response: AuthResponse) => void
+  onAuthenticated: (response: AuthResponse) => void | Promise<void>
 }
 
 export function GoogleSignInButton({ role, onAuthenticated }: GoogleSignInButtonProps) {
@@ -41,7 +41,7 @@ export function GoogleSignInButton({ role, onAuthenticated }: GoogleSignInButton
             onboardingPrefillStorage.save(
               getGoogleOnboardingPrefill(response.credential),
             )
-            authenticatedRef.current(auth)
+            await authenticatedRef.current(auth)
           } catch (exception) {
             setError(
               exception instanceof Error

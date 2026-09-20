@@ -4,6 +4,7 @@ export type PostAuthDestination =
   | 'member-onboarding'
   | 'trainer-onboarding'
   | 'business-onboarding'
+  | 'staff-onboarding'
   | 'dashboard'
 
 export function getPostAuthDestination(
@@ -16,6 +17,8 @@ export function getPostAuthDestination(
       return 'trainer-onboarding'
     case 'FACILITY_OWNER':
       return 'business-onboarding'
+    case 'STAFF':
+      return 'staff-onboarding'
     default:
       return 'member-onboarding'
   }

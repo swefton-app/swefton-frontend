@@ -1,5 +1,6 @@
 import type {
   UserAddressInput,
+  GymInput,
   UserPreferencesInput,
   UserProfileInput,
 } from './contracts'
@@ -44,6 +45,28 @@ export function validatePreferences(
   return preferences.timezone.trim()
     ? {}
     : { timezone: 'Timezone is required.' }
+}
+
+export function validateGym(gym: GymInput): FieldErrors<GymInput> {
+  const errors: FieldErrors<GymInput> = {}
+
+  if (!gym.name.trim()) errors.name = 'Facility name is required.'
+  if (!gym.addressLine.trim()) errors.addressLine = 'Street address is required.'
+  if (!gym.city.trim()) errors.city = 'City is required.'
+  if (!gym.country.trim()) errors.country = 'Country is required.'
+  if (!gym.type) errors.type = 'Select a gym type.'
+  if (gym.capacity !== undefined && gym.capacity < 1) {
+    errors.capacity = 'Capacity must be at least 1.'
+  }
+  if (!gym.formattedAddress?.trim() || gym.latitude === undefined || gym.longitude === undefined) {
+    errors.latitude = 'Choose the exact facility location on the map.'
+    errors.longitude = 'Choose the exact facility location on the map.'
+  } else if (gym.latitude < -90 || gym.latitude > 90 || gym.longitude < -180 || gym.longitude > 180) {
+    errors.latitude = 'Choose a valid map location.'
+    errors.longitude = 'Choose a valid map location.'
+  }
+
+  return errors
 }
 
 export function hasFieldErrors<T>(errors: FieldErrors<T>): boolean {

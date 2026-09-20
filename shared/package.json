@@ -11,6 +11,7 @@
     "./cv": "./src/cv/index.ts",
     "./design": "./src/design/index.ts",
     "./onboarding": "./src/onboarding/index.ts",
-    "./dashboard": "./src/dashboard/index.ts"
+    "./dashboard": "./src/dashboard/index.ts",
+    "./staff": "./src/staff/index.ts"
   }
 }

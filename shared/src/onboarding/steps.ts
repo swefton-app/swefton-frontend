@@ -1,10 +1,17 @@
 import type { UserRole } from '../auth/contracts'
 
+export type OnboardingRole = UserRole | 'STAFF'
+
 export type OnboardingStepId =
   | 'profile'
   | 'address'
   | 'preferences'
   | 'trainer-documents'
+  | 'business-licence'
+  | 'facility-category'
+  | 'gym-details'
+  | 'staff-role'
+  | 'staff-documents'
 
 export interface OnboardingStep {
   id: OnboardingStepId
@@ -41,8 +48,56 @@ const trainerDocumentsStep: OnboardingStep = {
   description: 'Upload or create your CV, then add your professional licence.',
 }
 
-export function getOnboardingSteps(role: UserRole): readonly OnboardingStep[] {
-  return role === 'TRAINER'
-    ? [baseSteps[0], trainerDocumentsStep, ...baseSteps.slice(1)]
-    : baseSteps
+const businessLicenceStep: OnboardingStep = {
+  id: 'business-licence',
+  eyebrow: 'Business verification',
+  title: 'Add your licence',
+  description: 'If your business has a licence, add it now. You can also continue without one.',
+}
+
+const facilityCategoryStep: OnboardingStep = {
+  id: 'facility-category',
+  eyebrow: 'Facility category',
+  title: 'What are you registering?',
+  description: 'Choose the kind of facility you want to manage on Swefton.',
+}
+
+const gymDetailsStep: OnboardingStep = {
+  id: 'gym-details',
+  eyebrow: 'Gym registration',
+  title: 'Create your gym',
+  description: 'Add the public details and media customers will see.',
+}
+
+const staffRoleStep: OnboardingStep = {
+  id: 'staff-role',
+  eyebrow: 'Your position',
+  title: 'How do you work at the facility?',
+  description: 'Choose the staff role that best matches your responsibilities.',
+}
+
+const staffDocumentsStep: OnboardingStep = {
+  id: 'staff-documents',
+  eyebrow: 'Professional details',
+  title: 'Add your CV',
+  description: 'Upload an existing CV or create one with Swefton.',
+}
+
+export function getOnboardingSteps(role: OnboardingRole): readonly OnboardingStep[] {
+  if (role === 'TRAINER') {
+    return [baseSteps[0], trainerDocumentsStep, ...baseSteps.slice(1)]
+  }
+  if (role === 'FACILITY_OWNER') {
+    return [
+      facilityCategoryStep,
+      baseSteps[0],
+      businessLicenceStep,
+      gymDetailsStep,
+      baseSteps[2],
+    ]
+  }
+  if (role === 'STAFF') {
+    return [staffRoleStep, baseSteps[0], staffDocumentsStep, ...baseSteps.slice(1)]
+  }
+  return baseSteps
 }

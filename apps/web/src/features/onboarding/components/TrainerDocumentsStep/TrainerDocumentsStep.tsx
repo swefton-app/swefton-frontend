@@ -1,5 +1,5 @@
 import { useEffect, useState, type ChangeEvent, type ReactNode } from 'react'
-import type { GenerateCvResponse } from '@swefton/shared/cv'
+import type { GenerateCvRequest, GenerateCvResponse } from '@swefton/shared/cv'
 import type { TrainerDocumentResponse, UserProfileInput } from '@swefton/shared/onboarding'
 import {
   Award,
@@ -21,6 +21,8 @@ interface TrainerDocumentsStepProps {
   profile: UserProfileInput
   onChange: (type: 'cv' | 'licence', file: File | null) => void
   onGenerated: (document: TrainerDocumentResponse) => void
+  requireLicence?: boolean
+  generateCv?: (request: GenerateCvRequest) => Promise<GenerateCvResponse>
 }
 
 export function TrainerDocumentsStep({
@@ -30,6 +32,8 @@ export function TrainerDocumentsStep({
   profile,
   onChange,
   onGenerated,
+  requireLicence = true,
+  generateCv,
 }: TrainerDocumentsStepProps) {
   const [builderOpen, setBuilderOpen] = useState(false)
   const [builderStarted, setBuilderStarted] = useState(false)
@@ -111,19 +115,21 @@ export function TrainerDocumentsStep({
         </div>
       </section>
 
-      <DocumentUpload
-        icon={<Award />}
-        title="Professional licence"
-        description="PDF, JPG or PNG"
-        file={licence}
-        accept=".pdf,.jpg,.jpeg,.png,application/pdf,image/jpeg,image/png"
-        onChange={selectFile('licence')}
-      />
+      {requireLicence && (
+        <DocumentUpload
+          icon={<Award />}
+          title="Professional licence"
+          description="PDF, JPG or PNG"
+          file={licence}
+          accept=".pdf,.jpg,.jpeg,.png,application/pdf,image/jpeg,image/png"
+          onChange={selectFile('licence')}
+        />
+      )}
 
       <div className={styles.requirements}>
         <strong>Before you finish</strong>
         <span><CheckCircle2 /> {cvRequirementText}</span>
-        <span><CheckCircle2 /> {licence ? 'Your professional licence is ready' : 'Your professional licence is still required'}</span>
+        {requireLicence && <span><CheckCircle2 /> {licence ? 'Your professional licence is ready' : 'Your professional licence is still required'}</span>}
         <span><CheckCircle2 /> Uploaded files must be clear and no larger than 20 MB</span>
       </div>
 
@@ -132,7 +138,7 @@ export function TrainerDocumentsStep({
           className={`${styles.builderOverlay} ${builderOpen ? '' : styles.builderHidden}`}
           role="dialog"
           aria-modal="true"
-          aria-label="Create your trainer CV"
+          aria-label="Create your professional CV"
           aria-hidden={!builderOpen}
           onMouseDown={(event) => {
             if (event.target === event.currentTarget) setBuilderOpen(false)
@@ -156,6 +162,7 @@ export function TrainerDocumentsStep({
                 summary: profile.bio ?? '',
               }}
               onGenerated={finishBuilder}
+              generateCv={generateCv}
             />
           </div>
         </div>

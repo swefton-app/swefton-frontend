@@ -1,0 +1,163 @@
+.content {
+  width: min(1320px, 100%);
+  margin: 0 auto;
+  padding: 34px clamp(26px, 4vw, 58px) 60px;
+}
+
+.hero {
+  min-height: 225px;
+  display: flex;
+  align-items: end;
+  justify-content: space-between;
+  gap: 36px;
+  padding: 36px;
+  overflow: hidden;
+  color: #f5f8f5;
+  border-radius: 22px;
+  background:
+    radial-gradient(circle at 88% 2%, rgba(185, 243, 75, .24), transparent 28%),
+    linear-gradient(130deg, #121a16 0%, #1c2821 100%);
+  box-shadow: 0 20px 50px rgba(31, 40, 35, .12);
+}
+
+.hero > div { max-width: 680px; }
+.eyebrow { color: #7e887f; font-size: 8px; font-weight: 850; letter-spacing: .15em; text-transform: uppercase; }
+.hero .eyebrow { color: #a7b2aa; }
+.hero h2 { max-width: 660px; margin: 10px 0 12px; font-size: clamp(29px, 4vw, 47px); letter-spacing: -.052em; line-height: 1.02; }
+.hero p { max-width: 620px; margin: 0; color: #aeb9b1; font-size: 11px; line-height: 1.7; }
+.hero > button, .empty button {
+  min-height: 48px;
+  flex: 0 0 auto;
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  padding: 12px 18px;
+  color: #17201b;
+  border-radius: 11px;
+  background: #b9f34b;
+  cursor: pointer;
+  font-size: 12px;
+  font-weight: 850;
+}
+.hero > button:hover, .empty button:hover { background: #a9e43b; }
+.hero button svg, .empty button svg { width: 15px; }
+
+.metrics { display: grid; grid-template-columns: repeat(3, 1fr); gap: 13px; margin-top: 16px; }
+.metrics article { display: flex; align-items: center; gap: 13px; padding: 19px; border: 1px solid #dde0d8; border-radius: 15px; background: #fafaf6; }
+.metrics article > span { width: 39px; height: 39px; display: grid; place-items: center; color: #28322c; border-radius: 11px; background: #e7eadf; }
+.metrics svg { width: 17px; }
+.metrics div { display: grid; gap: 3px; }
+.metrics small { color: #848c85; font-size: 7px; font-weight: 850; letter-spacing: .12em; text-transform: uppercase; }
+.metrics strong { font-size: 22px; letter-spacing: -.04em; }
+.metrics p { margin: 0; color: #929991; font-size: 8px; }
+
+.grid { display: grid; grid-template-columns: minmax(0, 1.35fr) minmax(300px, .65fr); gap: 16px; margin-top: 16px; }
+.panel, .flowPanel { border: 1px solid #dcded6; border-radius: 18px; background: #fafaf7; }
+.panel { min-height: 430px; padding: 25px; }
+.panel > header { display: flex; align-items: center; justify-content: space-between; gap: 15px; padding-bottom: 20px; border-bottom: 1px solid #e2e4dd; }
+.panel h3, .flowPanel h3 { margin: 5px 0 0; font-size: 18px; letter-spacing: -.025em; }
+.panel > header > span { color: #747d75; font-size: 9px; font-weight: 800; }
+
+.empty { min-height: 330px; display: grid; place-items: center; align-content: center; text-align: center; }
+.empty > span { width: 56px; height: 56px; display: grid; place-items: center; color: #46524a; border-radius: 16px; background: #e8ebe4; }
+.empty > span svg { width: 23px; }
+.empty h4 { margin: 17px 0 6px; color: #303b34; font-size: 15px; }
+.empty p { max-width: 360px; margin: 0; color: #858e87; font-size: 10px; line-height: 1.6; }
+.empty button { min-height: 43px; margin-top: 17px; padding: 10px 15px; font-size: 10px; }
+
+.invitationList { display: grid; }
+.invitationList article { min-height: 76px; display: grid; grid-template-columns: 43px minmax(160px, 1fr) auto 32px; align-items: center; gap: 13px; padding: 11px 4px; border-bottom: 1px solid #e5e7e1; }
+.avatar { width: 42px; height: 42px; display: grid; place-items: center; color: #33402f; border-radius: 12px; background: #def0be; font-size: 10px; font-weight: 900; }
+.invitationList article > div { min-width: 0; display: grid; gap: 5px; }
+.invitationList strong { overflow: hidden; font-size: 11px; text-overflow: ellipsis; }
+.invitationList small { overflow: hidden; color: #899189; font-size: 8px; text-overflow: ellipsis; white-space: nowrap; }
+.pending { display: flex; align-items: center; gap: 5px; padding: 6px 8px; color: #886321; border-radius: 999px; background: #f5e8c9; font-size: 7px; font-weight: 850; text-transform: uppercase; }
+.pending svg { width: 10px; }
+.invitationList article > button { width: 30px; height: 30px; display: grid; place-items: center; color: #929a93; border-radius: 8px; background: transparent; cursor: pointer; }
+.invitationList article > button:hover { color: #a7433c; background: #f7e8e6; }
+.invitationList article > button svg { width: 14px; }
+
+.flowPanel { padding: 25px; }
+.flowPanel ol { display: grid; gap: 3px; margin: 22px 0 0; padding: 0; list-style: none; counter-reset: flow; }
+.flowPanel li { position: relative; display: grid; grid-template-columns: 39px 1fr; gap: 12px; padding: 0 0 20px; counter-increment: flow; }
+.flowPanel li:not(:last-child)::after { content: ''; position: absolute; top: 40px; bottom: 2px; left: 19px; width: 1px; background: #d8ddd4; }
+.flowPanel li > span { width: 39px; height: 39px; display: grid; place-items: center; color: #526058; border-radius: 11px; background: #e7eae3; }
+.flowPanel li > span svg { width: 16px; }
+.flowPanel li div { display: grid; gap: 5px; padding-top: 3px; }
+.flowPanel li strong { font-size: 10px; }
+.flowPanel li p { margin: 0; color: #858d86; font-size: 8px; line-height: 1.55; }
+.emailAction { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin: 1px 0 12px; padding: 12px 13px; color: #69736b; border: 1px dashed #cbd1c7; border-radius: 11px; background: #f4f5f0; }
+.emailAction span, .emailAction strong { display: flex; align-items: center; gap: 6px; }
+.emailAction span { font-size: 8px; font-weight: 750; }
+.emailAction strong { flex: 0 0 auto; padding: 7px 9px; color: #23301e; border-radius: 8px; background: #b9f34b; font-size: 8px; }
+.emailAction svg { width: 11px; }
+.policy { display: flex; gap: 10px; padding: 13px; color: #41512c; border: 1px solid #dbe8c5; border-radius: 11px; background: #f1f7e8; }
+.policy > svg { width: 16px; flex: 0 0 auto; }
+.policy p { display: grid; gap: 4px; margin: 0; }
+.policy strong { font-size: 9px; }
+.policy span { color: #748063; font-size: 8px; line-height: 1.5; }
+
+.backdrop { position: fixed; z-index: 50; inset: 0; display: grid; place-items: center; padding: 20px; background: rgba(9, 13, 11, .66); backdrop-filter: blur(8px); }
+.dialog { width: min(540px, 100%); overflow: hidden; border: 1px solid #d9ded5; border-radius: 21px; background: #fbfbf7; box-shadow: 0 30px 90px rgba(8, 15, 11, .3); }
+.dialog > header { display: grid; grid-template-columns: 44px minmax(0, 1fr) 34px; align-items: center; gap: 12px; padding: 22px 24px; color: white; background: #151e19; }
+.dialog > header > span { width: 44px; height: 44px; display: grid; place-items: center; color: #b9f34b; border-radius: 12px; background: rgba(255, 255, 255, .08); }
+.dialog > header > span svg { width: 19px; }
+.dialog > header small { color: #8f9a92; font-size: 7px; font-weight: 850; letter-spacing: .12em; text-transform: uppercase; }
+.dialog > header h3 { margin: 4px 0 0; font-size: 16px; letter-spacing: -.025em; }
+.dialog > header button { width: 34px; height: 34px; display: grid; place-items: center; color: #8f9a92; border-radius: 9px; background: transparent; cursor: pointer; }
+.dialog > header button:hover { color: white; background: rgba(255, 255, 255, .08); }
+.dialog > header button svg { width: 16px; }
+.dialog form { display: grid; gap: 18px; padding: 24px; }
+.notice { display: flex; gap: 11px; padding: 13px; color: #34422b; border: 1px solid #dbe7c9; border-radius: 11px; background: #f2f7ea; }
+.notice > svg { width: 17px; flex: 0 0 auto; }
+.notice p { display: grid; gap: 4px; margin: 0; }
+.notice strong { font-size: 9px; }
+.notice span { color: #778268; font-size: 8px; line-height: 1.5; }
+.dialog label { display: grid; gap: 8px; }
+.dialog label > span { color: #3a453e; font-size: 9px; font-weight: 800; }
+.dialog label > div { height: 50px; display: flex; align-items: center; gap: 10px; padding: 0 13px; border: 1px solid #d5d9d1; border-radius: 11px; background: white; transition: border-color .18s, box-shadow .18s; }
+.dialog label > div:focus-within { border-color: #82ad31; box-shadow: 0 0 0 3px rgba(153, 209, 47, .15); }
+.dialog label > div.invalidField { border-color: #d47870; box-shadow: 0 0 0 3px rgba(202, 94, 84, .1); }
+.dialog label > div > svg { width: 16px; color: #879087; }
+.dialog input { flex: 1; min-width: 0; color: #263029; outline: 0; background: transparent; font-size: 12px; }
+.dialog input::placeholder { color: #adb3ad; }
+.error, .success { display: flex; align-items: center; gap: 6px; font-size: 8px; font-weight: 750; }
+.error { color: #a2433c; }
+.success { padding: 10px 12px; color: #4f6e26; border: 1px solid #d6e6bb; border-radius: 9px; background: #f1f8e7; }
+.error svg, .success svg { width: 12px; }
+.dialogActions { display: flex; justify-content: flex-end; gap: 9px; padding-top: 2px; }
+.dialogActions button { min-height: 44px; display: flex; align-items: center; gap: 7px; padding: 10px 16px; border: 1px solid #d6dad2; border-radius: 10px; background: white; cursor: pointer; font-size: 10px; font-weight: 850; }
+.dialogActions button[type='submit'] { color: #17201b; border-color: #b9f34b; background: #b9f34b; }
+.dialogActions button[type='submit']:hover { background: #a9e43b; }
+.dialogActions button:disabled { opacity: .5; cursor: not-allowed; }
+.dialogActions svg { width: 13px; }
+.dialog > footer { display: flex; align-items: center; gap: 7px; padding: 13px 24px; color: #7d867e; border-top: 1px solid #e3e5df; background: #f4f5f0; font-size: 8px; }
+.dialog > footer svg { width: 13px; }
+.spin { animation: spin .85s linear infinite; }
+@keyframes spin { to { transform: rotate(360deg); } }
+
+@media (max-width: 950px) {
+  .grid { grid-template-columns: 1fr; }
+  .flowPanel { order: -1; }
+  .flowPanel ol { grid-template-columns: repeat(3, 1fr); gap: 12px; }
+  .flowPanel li { grid-template-columns: 35px 1fr; padding: 0; }
+  .flowPanel li::after { display: none; }
+}
+
+@media (max-width: 760px) {
+  .content { padding: 20px 14px 40px; }
+  .hero { min-height: 260px; align-items: flex-start; flex-direction: column; padding: 26px; }
+  .metrics { grid-template-columns: 1fr; }
+  .flowPanel ol { grid-template-columns: 1fr; }
+  .invitationList article { grid-template-columns: 43px minmax(0, 1fr) 30px; }
+  .pending { grid-column: 2 / 3; width: fit-content; }
+  .invitationList article > button { grid-column: 3; grid-row: 1; }
+}
+
+@media (max-width: 480px) {
+  .hero h2 { font-size: 29px; }
+  .panel, .flowPanel { padding: 19px; }
+  .dialog > header, .dialog form { padding: 19px; }
+  .dialogActions { display: grid; grid-template-columns: 1fr 1fr; }
+  .dialogActions button { justify-content: center; padding-inline: 10px; }
+}

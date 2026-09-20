@@ -1,43 +1,59 @@
 import { useEffect, type FormEvent } from 'react'
-import type { UserRole } from '@swefton/shared/auth'
+import type { OnboardingRole } from '@swefton/shared/onboarding'
 import {
   ArrowLeft,
   ArrowRight,
   BadgeCheck,
+  Building2,
   Check,
   CircleUserRound,
+  Dumbbell,
+  FileBadge2,
   MapPin,
   Settings2,
   Sparkles,
+  UserRoundCog,
 } from 'lucide-react'
 import { AppFooter } from '../../../../components/layout/AppFooter'
 import { AppHeader } from '../../../../components/layout/AppHeader'
 import { onboardingPrefillStorage } from '../../../../core/storage/onboardingPrefillStorage'
 import { tokenStorage } from '../../../../core/storage/tokenStorage'
 import { AddressStep } from '../../components/AddressStep/AddressStep'
+import { BusinessLicenceStep } from '../../components/BusinessLicenceStep/BusinessLicenceStep'
+import { FacilityCategoryStep } from '../../components/FacilityCategoryStep/FacilityCategoryStep'
+import { GymDetailsStep } from '../../components/GymDetailsStep/GymDetailsStep'
 import { PreferencesStep } from '../../components/PreferencesStep/PreferencesStep'
 import { ProfileStep } from '../../components/ProfileStep/ProfileStep'
 import { TrainerDocumentsStep } from '../../components/TrainerDocumentsStep/TrainerDocumentsStep'
+import { StaffRoleStep } from '../../components/StaffRoleStep/StaffRoleStep'
+import { staffApi } from '../../../staff/api/staffApi'
 import { useOnboardingFlow } from '../../hooks/useOnboardingFlow'
 import styles from './OnboardingPage.module.css'
 
 const stepIcons = {
   profile: CircleUserRound,
   'trainer-documents': BadgeCheck,
+  'business-licence': FileBadge2,
+  'facility-category': Building2,
+  'gym-details': Dumbbell,
   address: MapPin,
   preferences: Settings2,
+  'staff-role': UserRoundCog,
+  'staff-documents': FileBadge2,
 } as const
 
-function roleFromPath(): UserRole {
+function roleFromPath(): OnboardingRole {
   if (window.location.pathname.endsWith('/trainer')) return 'TRAINER'
   if (window.location.pathname.endsWith('/facility')) return 'FACILITY_OWNER'
+  if (window.location.pathname.endsWith('/staff')) return 'STAFF'
   return 'USER'
 }
 
-const roleLabels: Record<UserRole, string> = {
+const roleLabels: Record<OnboardingRole, string> = {
   USER: 'Member setup',
   TRAINER: 'Trainer setup',
   FACILITY_OWNER: 'Business setup',
+  STAFF: 'Staff setup',
 }
 
 export function OnboardingPage() {
@@ -49,8 +65,14 @@ export function OnboardingPage() {
   const progressPercent = ((flow.stepIndex + 1) / flow.steps.length) * 100
 
   useEffect(() => {
-    if (!tokenStorage.getAccessToken()) window.location.replace('/')
-  }, [])
+    if (!tokenStorage.getAccessToken()) {
+      window.location.replace('/')
+      return
+    }
+    if (role === 'STAFF' && tokenStorage.getRole() !== 'STAFF') {
+      window.location.replace('/')
+    }
+  }, [role])
 
   if (!tokenStorage.getAccessToken()) return null
 
@@ -125,6 +147,7 @@ export function OnboardingPage() {
               {activeStep.id === 'profile' && (
                 <ProfileStep
                   role={role}
+                  staffRole={flow.staffRole}
                   value={flow.profile}
                   errors={flow.profileErrors}
                   image={flow.profileImage}
@@ -156,6 +179,52 @@ export function OnboardingPage() {
                   profile={flow.profile}
                   onChange={flow.setDocument}
                   onGenerated={flow.setGeneratedCv}
+                />
+              )}
+              {activeStep.id === 'staff-role' && (
+                <StaffRoleStep
+                  facilityName={flow.staffContext?.facilityName}
+                  roles={flow.staffContext?.roles ?? []}
+                  value={flow.staffRole}
+                  onChange={flow.setStaffRole}
+                />
+              )}
+              {activeStep.id === 'staff-documents' && (
+                <TrainerDocumentsStep
+                  cv={flow.cv}
+                  generatedCv={flow.generatedCv}
+                  licence={flow.licence}
+                  profile={flow.profile}
+                  requireLicence={flow.staffRole === 'INSTRUCTOR' || flow.staffRole === 'TRAINER'}
+                  generateCv={staffApi.generateCv}
+                  onChange={flow.setDocument}
+                  onGenerated={flow.setGeneratedCv}
+                />
+              )}
+              {activeStep.id === 'business-licence' && (
+                <BusinessLicenceStep
+                  licence={flow.licence}
+                  onChange={(file) => flow.setDocument('licence', file)}
+                />
+              )}
+              {activeStep.id === 'facility-category' && (
+                <FacilityCategoryStep
+                  value={flow.facilityCategory}
+                  onChange={flow.setFacilityCategory}
+                />
+              )}
+              {activeStep.id === 'gym-details' && (
+                <GymDetailsStep
+                  category={flow.facilityCategory || 'GYM'}
+                  value={flow.gym}
+                  errors={flow.gymErrors}
+                  logo={flow.gymLogo}
+                  cover={flow.gymCover}
+                  gallery={flow.gymGallery}
+                  onChange={flow.setGym}
+                  onLogoChange={flow.setGymLogo}
+                  onCoverChange={flow.setGymCover}
+                  onGalleryChange={flow.setGymGallery}
                 />
               )}
             </div>

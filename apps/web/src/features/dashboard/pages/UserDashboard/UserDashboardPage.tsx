@@ -973,11 +973,11 @@ export function UserDashboardPage() {
   const [profileUploading, setProfileUploading] = useState(false);
   const [profileUploadMessage, setProfileUploadMessage] = useState<string | null>(null);
   const [loading, setLoading] = useState(
-    role === "USER" || role === "TRAINER",
+    role === "USER" || role === "TRAINER" || role === "STAFF",
   );
 
   useEffect(() => {
-    if (role !== "USER" && role !== "TRAINER") return;
+    if (role !== "USER" && role !== "TRAINER" && role !== "STAFF") return;
     let active = true;
 
     void Promise.allSettled([
@@ -988,13 +988,13 @@ export function UserDashboardPage() {
         if (!active) return;
         if (dashboardResult.status === "rejected") {
           window.location.replace(
-            role === "TRAINER" ? "/onboarding/trainer" : "/onboarding/user",
+            role === "TRAINER" ? "/onboarding/trainer" : role === "STAFF" ? "/onboarding/staff" : "/onboarding/user",
           );
           return;
         }
         if (!dashboardResult.value.onboardingCompleted) {
           window.location.replace(
-            role === "TRAINER" ? "/onboarding/trainer" : "/onboarding/user",
+            role === "TRAINER" ? "/onboarding/trainer" : role === "STAFF" ? "/onboarding/staff" : "/onboarding/user",
           );
           return;
         }
@@ -1058,7 +1058,7 @@ export function UserDashboardPage() {
     return <AdminDashboard onSignOut={signOut} />;
   }
 
-  if (role !== "USER" && role !== "TRAINER") {
+  if (role !== "USER" && role !== "TRAINER" && role !== "STAFF") {
     return (
       <main className={styles.statePage}>
         <section className={styles.stateCard}>
@@ -1112,7 +1112,7 @@ export function UserDashboardPage() {
   return (
     <div className={styles.shell}>
       <AppHeader
-        context="Member dashboard"
+        context={role === "STAFF" ? "Staff dashboard" : "Member dashboard"}
         currentPage="Overview"
         onSignOut={signOut}
       />
@@ -1152,7 +1152,7 @@ export function UserDashboardPage() {
             />
             <div>
               <strong>{name}</strong>
-              <span>Member account</span>
+              <span>{role === "STAFF" ? "Staff account" : "Member account"}</span>
             </div>
           </div>
         </aside>

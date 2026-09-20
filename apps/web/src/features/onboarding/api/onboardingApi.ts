@@ -1,6 +1,9 @@
 import {
   onboardingEndpoints,
+  type CompleteGymOnboardingRequest,
+  type CompleteGymOnboardingResponse,
   type ImageResponse,
+  type ImageType,
   type OnboardingRequest,
   type OnboardingResponse,
   type TrainerDocumentResponse,
@@ -25,11 +28,15 @@ export const onboardingApi = {
   },
 
   async uploadProfileImage(file: File) {
+    return this.uploadImage(file, 'PROFILE', 0)
+  },
+
+  async uploadImage(file: File, type: ImageType, position: number) {
     const formData = new FormData()
     formData.append('file', file)
     formData.append(
       'image',
-      new Blob([JSON.stringify({ type: 'PROFILE', position: 0 })], {
+      new Blob([JSON.stringify({ type, position })], {
         type: 'application/json',
       }),
     )
@@ -48,6 +55,25 @@ export const onboardingApi = {
     const { data } = await httpClient.post<TrainerDocumentResponse>(
       `${onboardingEndpoints.trainerDocuments}?type=${encodeURIComponent(type)}`,
       formData,
+    )
+    return data
+  },
+
+  async uploadFacilityDocument(file: File, type: TrainerDocumentType) {
+    const formData = new FormData()
+    formData.append('file', file)
+
+    const { data } = await httpClient.post<TrainerDocumentResponse>(
+      `${onboardingEndpoints.facilityDocuments}?type=${encodeURIComponent(type)}`,
+      formData,
+    )
+    return data
+  },
+
+  async completeGymOnboarding(payload: CompleteGymOnboardingRequest) {
+    const { data } = await httpClient.post<CompleteGymOnboardingResponse>(
+      onboardingEndpoints.gymOnboarding,
+      payload,
     )
     return data
   },
