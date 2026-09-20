@@ -6,10 +6,11 @@ import type {
   VerifyEmailRequest,
 } from "@swefton/shared/auth";
 import { getApiErrorMessage } from "../../../core/http/getApiErrorMessage";
+import { activeBusinessStorage } from "../../../core/storage/activeBusinessStorage";
 import { onboardingPrefillStorage } from "../../../core/storage/onboardingPrefillStorage";
 import { tokenStorage } from "../../../core/storage/tokenStorage";
 import { authApi } from "../api/authApi";
-import { getPostAuthRoute } from "../utils/getPostAuthRoute";
+import { getPostAuthRoute, getPostLoginRoute } from "../utils/getPostAuthRoute";
 
 export type AuthView = "login" | "register" | "verify" | "authenticated";
 
@@ -30,25 +31,31 @@ export function useAuthFlow() {
     setView(nextView);
   };
 
-  const completeAuthentication = (
+  const completeAuthentication = async (
     response: AuthResponse,
     persistent = true,
   ) => {
     tokenStorage.save(response, persistent);
+    activeBusinessStorage.clear();
     const claimedRole = tokenStorage.getRole();
-    window.location.assign(
-      getPostAuthRoute({ ...response, role: claimedRole ?? response.role }),
-    );
+    const normalized = { ...response, role: claimedRole ?? response.role };
+    const route = await getPostLoginRoute(normalized, persistent);
+    window.location.assign(route);
   };
 
-  const completeLogin = (response: AuthResponse, persistent = true) => {
+  const completeLogin = async (response: AuthResponse, persistent = true) => {
     tokenStorage.save(response, persistent);
+    activeBusinessStorage.clear();
     onboardingPrefillStorage.clear();
-    window.location.assign("/userDashboard");
+    const claimedRole = tokenStorage.getRole();
+    const normalized = { ...response, role: claimedRole ?? response.role };
+    const route = await getPostLoginRoute(normalized, persistent);
+    window.location.assign(route);
   };
 
   const completeRegistration = (response: AuthResponse, persistent = true) => {
     tokenStorage.save(response, persistent);
+    activeBusinessStorage.clear();
     const claimedRole = tokenStorage.getRole();
     window.location.assign(
       getPostAuthRoute({
@@ -64,7 +71,7 @@ export function useAuthFlow() {
     setError("");
     try {
       const response = await authApi.login(payload);
-      completeLogin(response, keepSignedIn);
+      await completeLogin(response, keepSignedIn);
     } catch (requestError) {
       setError(getApiErrorMessage(requestError, "Invalid email or password."));
     } finally {
@@ -150,6 +157,7 @@ export function useAuthFlow() {
       // Local browser credentials must be cleared even when the API is offline.
     } finally {
       tokenStorage.clear();
+      activeBusinessStorage.clear();
       onboardingPrefillStorage.clear();
       setPending(false);
       setView("login");

@@ -11,7 +11,7 @@ interface LoginFormProps {
   error: string
   notice: string
   pending: boolean
-  onGoogleAuthenticated: (response: AuthResponse) => void
+  onGoogleAuthenticated: (response: AuthResponse) => void | Promise<void>
   onSubmit: (payload: LoginRequest, keepSignedIn: boolean) => Promise<void>
 }
 

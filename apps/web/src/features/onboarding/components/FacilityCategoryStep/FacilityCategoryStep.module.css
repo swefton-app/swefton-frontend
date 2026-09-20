@@ -1,0 +1,21 @@
+.categoryGrid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.category { width: 100%; min-height: 112px; display: grid; grid-template-columns: auto 1fr auto; align-items: center; gap: 14px; padding: 17px; color: inherit; text-align: left; border: 1px solid #303a49; border-radius: 16px; background: rgba(8, 12, 18, .72); cursor: pointer; transition: transform .2s, border-color .2s, background .2s; }
+.category:hover { transform: translateY(-2px); border-color: #398da9; background: #0d151f; }
+.category.selected { border-color: rgba(58, 199, 232, .58); background: linear-gradient(120deg, rgba(30, 155, 199, .11), rgba(86, 62, 212, .07)); box-shadow: 0 14px 35px rgba(0, 0, 0, .18); }
+.icon { width: 48px; height: 48px; display: grid; place-items: center; color: #50caeb; border-radius: 14px; background: rgba(38, 161, 202, .11); }
+.icon svg { width: 23px; }
+.copy { display: grid; gap: 7px; }
+.copy strong { color: #eef3fa; font-size: 15px; }
+.copy small { max-width: 440px; color: #758195; font-size: 10px; line-height: 1.6; }
+.check { color: #526071; }
+.selected .check { color: #50d2a7; }
+.check svg { width: 22px; }
+.light .category { color: #2e3932; border-color: #d3d9cf; background: #f7f8f3; }
+.light .category:hover { border-color: #95ad6c; background: #f1f5e9; }
+.light .category.selected { border-color: #91bd4d; background: #f1f8e5; box-shadow: 0 10px 26px rgba(53, 77, 39, .1); }
+.light .icon { color: #6f982f; background: #e6eed9; }
+.light .copy strong { color: #2a352e; }
+.light .copy small { color: #79837b; }
+.light .check { color: #98a199; }
+.light .selected .check { color: #70a329; }
+@media (max-width: 680px) { .categoryGrid { grid-template-columns: 1fr; } }

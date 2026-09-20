@@ -15,4 +15,5 @@ export const publicAuthEndpoints = [
   authEndpoints.verifyEmail,
   authEndpoints.resendVerificationCode,
   authEndpoints.google,
+  '/public/staff-invitations',
 ] as const

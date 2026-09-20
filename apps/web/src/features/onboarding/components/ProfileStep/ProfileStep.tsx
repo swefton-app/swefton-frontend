@@ -1,5 +1,6 @@
 import { useEffect, useMemo, type ChangeEvent } from 'react'
-import type { UserRole } from '@swefton/shared/auth'
+import type { OnboardingRole } from '@swefton/shared/onboarding'
+import type { FacilityStaffRole } from '@swefton/shared/staff'
 import type {
   FieldErrors,
   Gender,
@@ -11,7 +12,8 @@ import formStyles from '../OnboardingForm.module.css'
 import styles from './ProfileStep.module.css'
 
 interface ProfileStepProps {
-  role: UserRole
+  role: OnboardingRole
+  staffRole?: FacilityStaffRole
   value: UserProfileInput
   errors: FieldErrors<UserProfileInput>
   image: File | null
@@ -30,6 +32,7 @@ const genders: readonly { value: Gender; label: string }[] = [
 
 export function ProfileStep({
   role,
+  staffRole,
   value,
   errors,
   image,
@@ -165,7 +168,7 @@ export function ProfileStep({
         <small className={formStyles.hint}>{value.bio?.length ?? 0}/500</small>
       </label>
 
-      {role === 'TRAINER' && (
+      {(role === 'TRAINER' || (role === 'STAFF' && (staffRole === 'INSTRUCTOR' || staffRole === 'TRAINER'))) && (
         <div className={formStyles.twoColumns}>
           <label className={formStyles.field}>
             <span>Years of experience</span>
@@ -180,7 +183,7 @@ export function ProfileStep({
               placeholder="e.g. 5"
             />
           </label>
-          <label className={formStyles.field}>
+          {role === 'TRAINER' && <label className={formStyles.field}>
             <span>Hourly price</span>
             <div className={formStyles.prefixedInput}>
               <span>€</span>
@@ -195,7 +198,7 @@ export function ProfileStep({
                 placeholder="35.00"
               />
             </div>
-          </label>
+          </label>}
         </div>
       )}
     </div>

@@ -1,6 +1,6 @@
-export type RoleCode = 'USER' | 'TRAINER' | 'FACILITY_OWNER' | 'ADMIN'
+export type RoleCode = 'USER' | 'TRAINER' | 'FACILITY_OWNER' | 'STAFF' | 'ADMIN'
 
-export type UserRole = Exclude<RoleCode, 'ADMIN'>
+export type UserRole = Exclude<RoleCode, 'ADMIN' | 'STAFF'>
 
 export interface LoginRequest {
   email: string

@@ -6,6 +6,7 @@ const ROLE_CODES: readonly RoleCode[] = [
   'USER',
   'TRAINER',
   'FACILITY_OWNER',
+  'STAFF',
   'ADMIN',
 ]
 
@@ -40,6 +41,7 @@ const clearTokens = () => {
 export const tokenStorage = {
   getAccessToken: () => getToken(ACCESS_TOKEN_KEY),
   getRefreshToken: () => getToken(REFRESH_TOKEN_KEY),
+  isPersistent: () => localStorage.getItem(ACCESS_TOKEN_KEY) !== null,
   getRole(): RoleCode | null {
     const role = readAccessTokenClaims()?.role
     return typeof role === 'string' && ROLE_CODES.includes(role as RoleCode)

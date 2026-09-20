@@ -20,7 +20,7 @@ interface RegisterFormProps {
   error: string
   notice: string
   pending: boolean
-  onGoogleAuthenticated: (response: AuthResponse) => void
+  onGoogleAuthenticated: (response: AuthResponse) => void | Promise<void>
   onSubmit: (payload: RegisterRequest) => Promise<void>
 }
 
