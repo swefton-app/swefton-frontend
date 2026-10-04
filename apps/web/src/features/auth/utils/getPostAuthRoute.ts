@@ -16,6 +16,9 @@ const webRoutes: Record<PostAuthDestination, string> = {
 }
 
 export function getPostAuthRoute(auth: AuthResponse): string {
+  if (auth.role === 'ADMIN') {
+    return '/userDashboard'
+  }
   if (auth.onboardingCompleted && auth.role === 'FACILITY_OWNER') {
     return '/gymDashboard'
   }

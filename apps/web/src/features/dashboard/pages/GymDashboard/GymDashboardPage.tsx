@@ -28,15 +28,17 @@ import { dashboardApi } from '../../api/dashboardApi'
 import { gymDashboardApi } from '../../api/gymDashboardApi'
 import { FacilityLocationPicker } from '../../../location/components/FacilityLocationPicker/FacilityLocationPicker'
 import { CreateBusinessPanel } from './CreateBusinessPanel'
+import { MachinesPanel } from './MachinesPanel'
 import styles from './GymDashboardPage.module.css'
 
 import { StaffPanel } from './StaffPanel'
 
-type Section = 'overview' | 'facilities' | 'staff' | 'media' | 'operations' | 'create'
+type Section = 'overview' | 'facilities' | 'machines' | 'staff' | 'media' | 'operations' | 'create'
 
 const navigation: readonly { id: Section; label: string; icon: typeof LayoutGrid }[] = [
   { id: 'overview', label: 'Command center', icon: LayoutGrid },
   { id: 'facilities', label: 'Facilities', icon: Building2 },
+  { id: 'machines', label: 'My machines', icon: Dumbbell },
   { id: 'staff', label: 'Staff', icon: UsersRound },
   { id: 'media', label: 'Media library', icon: Image },
   { id: 'operations', label: 'Readiness', icon: Activity },
@@ -45,6 +47,7 @@ const navigation: readonly { id: Section; label: string; icon: typeof LayoutGrid
 const sectionTitles: Record<Section, string> = {
   overview: 'Command center',
   facilities: 'Facilities',
+  machines: 'Machine inventory',
   staff: 'Staff',
   media: 'Media library',
   operations: 'Readiness',
@@ -285,6 +288,9 @@ export function GymDashboardPage() {
             )}
             {section === 'staff' && (
               <StaffPanel key={selected.facilityId} facilityId={selected.facilityId} facilityName={selected.name} />
+            )}
+            {section === 'machines' && (
+              <MachinesPanel key={selected.facilityId} facilityId={selected.facilityId} facilityName={selected.name} facilityCategory={selected.category} />
             )}
             {section === 'media' && <MediaLibrary media={allMedia} />}
             {section === 'operations' && <Operations gym={selected} />}
