@@ -17,7 +17,6 @@ import {
   Eye,
   FileText,
   Images,
-  Inbox,
   LayoutDashboard,
   LoaderCircle,
   MapPin,
@@ -40,6 +39,7 @@ import { AppHeader } from "../../../../components/layout/AppHeader/AppHeader";
 import { tokenStorage } from "../../../../core/storage/tokenStorage";
 import { authApi } from "../../../auth/api/authApi";
 import { dashboardApi } from "../../api/dashboardApi";
+import { AdminDashboard } from "../AdminDashboard";
 import styles from "./UserDashboardPage.module.css";
 
 const MAX_PROFILE_IMAGE_SIZE_BYTES = 10 * 1024 * 1024;
@@ -917,50 +917,6 @@ function TrainerDashboard({
           </section>
         </div>
       )}
-    </div>
-  );
-}
-
-function AdminDashboard({ onSignOut }: { onSignOut: () => void }) {
-  const cards = [
-    { icon: UsersRound, value: "—", label: "Active members", detail: "Platform community" },
-    { icon: ShieldCheck, value: "—", label: "Trainer reviews", detail: "Verification queue" },
-    { icon: Warehouse, value: "—", label: "Facilities", detail: "Active businesses" },
-    { icon: Inbox, value: "—", label: "Open reports", detail: "Needs attention" },
-  ];
-
-  return (
-    <div className={`${styles.shell} ${styles.adminShell}`}>
-      <AppHeader context="Admin console" currentPage="Overview" onSignOut={onSignOut} />
-      <main className={`${styles.content} ${styles.adminContent}`}>
-        <header className={styles.trainerWelcome}>
-          <div>
-            <span className={styles.eyebrow}>Platform operations</span>
-            <h1>Welcome to Swefton control.</h1>
-            <p>Monitor the community, review professionals, and keep the platform healthy.</p>
-          </div>
-          <span className={styles.roleBadge}><ShieldCheck aria-hidden="true" /> Administrator</span>
-        </header>
-        <section className={styles.adminGrid}>
-          {cards.map(({ icon: Icon, value, label, detail }) => (
-            <article key={label}>
-              <span><Icon aria-hidden="true" /></span>
-              <strong>{value}</strong>
-              <h2>{label}</h2>
-              <p>{detail}</p>
-            </article>
-          ))}
-        </section>
-        <section className={styles.adminPanel}>
-          <span><ShieldCheck aria-hidden="true" /></span>
-          <div>
-            <span className={styles.eyebrow}>Everything in one place</span>
-            <h2>Administration workspace ready</h2>
-            <p>Connect platform analytics and moderation endpoints to populate this overview.</p>
-          </div>
-          <button type="button">Open review queue <ArrowUpRight aria-hidden="true" /></button>
-        </section>
-      </main>
     </div>
   );
 }
