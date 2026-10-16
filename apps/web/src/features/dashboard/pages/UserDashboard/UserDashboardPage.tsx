@@ -8,9 +8,11 @@ import {
   ArrowUpRight,
   Award,
   Bell,
+  BadgeCheck,
   Camera,
   CalendarDays,
   CheckCircle2,
+  ChevronDown,
   ChevronRight,
   Dumbbell,
   Download,
@@ -19,12 +21,14 @@ import {
   Images,
   LayoutDashboard,
   LoaderCircle,
+  LockKeyhole,
   MapPin,
+  MapPinned,
   Megaphone,
   MessageSquare,
   MoreHorizontal,
+  Pencil,
   Plus,
-  Search,
   Settings,
   ShieldCheck,
   Sparkles,
@@ -32,14 +36,21 @@ import {
   UploadCloud,
   UserRound,
   UsersRound,
-  Warehouse,
   X,
 } from "lucide-react";
 import { AppHeader } from "../../../../components/layout/AppHeader/AppHeader";
+import { PasswordField } from "../../../../components/ui/PasswordField";
+import { getApiErrorMessage } from "../../../../core/http/getApiErrorMessage";
 import { tokenStorage } from "../../../../core/storage/tokenStorage";
 import { authApi } from "../../../auth/api/authApi";
+import { FacilityLocationPicker, type LocationFields } from "../../../location/components/FacilityLocationPicker/FacilityLocationPicker";
 import { dashboardApi } from "../../api/dashboardApi";
 import { AdminDashboard } from "../AdminDashboard";
+import { GymDiscovery } from "./GymDiscovery";
+import { TrainerDiscovery } from "./TrainerDiscovery";
+import { TrainerPackagesPanel } from "./TrainerPackagesPanel";
+import { MemberMemberships } from "./MemberMemberships";
+import { SocialFeed } from "../../../feed/components/SocialFeed";
 import styles from "./UserDashboardPage.module.css";
 
 const MAX_PROFILE_IMAGE_SIZE_BYTES = 10 * 1024 * 1024;
@@ -79,6 +90,215 @@ function Avatar({ className, name, url, onImageError }: AvatarProps) {
   );
 }
 
+type MemberSection = "overview" | "gyms" | "trainers" | "memberships" | "settings";
+
+function MemberNavigation({
+  current,
+  onNavigate,
+}: {
+  current: MemberSection;
+  onNavigate: (section: MemberSection) => void;
+}) {
+  const item = (section: MemberSection, label: string, icon: React.ReactNode) => (
+    <button
+      className={current === section ? styles.activeNav : undefined}
+      type="button"
+      onClick={() => onNavigate(section)}
+      aria-current={current === section ? "page" : undefined}
+    >
+      {icon}<span>{label}</span>
+    </button>
+  );
+
+  return (
+    <nav className={styles.navigation} aria-label="Member navigation">
+      {item("overview", "Overview", <LayoutDashboard aria-hidden="true" />)}
+      <span className={styles.navGroupLabel}>Discover</span>
+      {item("gyms", "Gyms", <MapPinned aria-hidden="true" />)}
+      {item("trainers", "Trainers", <Dumbbell aria-hidden="true" />)}
+      {item("memberships", "Memberships", <BadgeCheck aria-hidden="true" />)}
+      <span className={styles.navGroupLabel}>Account</span>
+      {item("settings", "Settings", <Settings aria-hidden="true" />)}
+    </nav>
+  );
+}
+
+function AccountLocationEditor({
+  address,
+  onUpdated,
+}: {
+  address: OnboardingResponse["address"];
+  onUpdated: (address: OnboardingResponse["address"]) => void;
+}) {
+  const [saving, setSaving] = useState(false);
+  const [message, setMessage] = useState("");
+  const [error, setError] = useState("");
+
+  const saveLocation = async (location: LocationFields) => {
+    if (location.latitude === undefined || location.longitude === undefined) return;
+    setSaving(true);
+    setMessage("");
+    setError("");
+    try {
+      const updated = await dashboardApi.updateLocation({
+        addressLine: location.addressLine,
+        city: location.city,
+        state: location.state,
+        postalCode: location.postalCode,
+        country: location.country,
+        latitude: location.latitude,
+        longitude: location.longitude,
+      });
+      onUpdated(updated);
+      setMessage("Location updated successfully.");
+    } catch (requestError) {
+      setError(getApiErrorMessage(requestError, "We could not update your location."));
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  return (
+    <div className={styles.accountLocationEditor}>
+      <div>
+        <span className={styles.eyebrow}>Saved location</span>
+        <strong>{[address.addressLine, address.city, address.country].filter(Boolean).join(", ") || "No location saved"}</strong>
+        <small>Search the map, place the pin, or use your device’s current location.</small>
+      </div>
+      <FacilityLocationPicker
+        kind="home"
+        tone="dark"
+        value={address}
+        onChange={(location) => void saveLocation(location)}
+        disabled={saving}
+      />
+      {(saving || message || error) && (
+        <p className={error ? styles.locationEditorError : styles.locationEditorMessage} role={error ? "alert" : "status"}>
+          {saving && <LoaderCircle className={styles.spinner} aria-hidden="true" />}
+          {error || (saving ? "Saving your location…" : message)}
+        </p>
+      )}
+    </div>
+  );
+}
+
+function LocationSettingsPage({
+  accountType,
+  address,
+  onUpdated,
+}: {
+  accountType: "Member" | "Trainer";
+  address: OnboardingResponse["address"];
+  onUpdated: (address: OnboardingResponse["address"]) => void;
+}) {
+  const [openSection, setOpenSection] = useState<"location" | "password" | null>(null);
+  const toggleSection = (section: "location" | "password") => {
+    setOpenSection((current) => current === section ? null : section);
+  };
+
+  return (
+    <>
+      <header className={styles.welcome}>
+        <div>
+          <span className={styles.eyebrow}>{accountType} settings</span>
+          <h1>Location settings</h1>
+          <p>Control the saved location used for nearby gyms and your profile.</p>
+        </div>
+        <div className={styles.roleBadge}><Settings aria-hidden="true" /><span>Settings</span></div>
+      </header>
+      <section className={`${styles.profilePanel} ${styles.settingsAccordion}`}>
+        <button
+          className={styles.settingsAccordionHeader}
+          type="button"
+          aria-expanded={openSection === "location"}
+          aria-controls="location-settings-content"
+          onClick={() => toggleSection("location")}
+        >
+          <span className={styles.settingsAccordionIcon}><MapPinned aria-hidden="true" /></span>
+          <span className={styles.settingsAccordionCopy}>
+            <span className={styles.eyebrow}>Location</span>
+            <strong>Edit your saved location</strong>
+            <small>Update the location used for nearby gyms and your profile.</small>
+          </span>
+          <ChevronDown className={styles.settingsChevron} aria-hidden="true" />
+        </button>
+        <div id="location-settings-content" className={styles.settingsAccordionContent} data-open={openSection === "location"}>
+          <div><AccountLocationEditor address={address} onUpdated={onUpdated} /></div>
+        </div>
+      </section>
+      <PasswordSettings open={openSection === "password"} onToggle={() => toggleSection("password")} />
+    </>
+  );
+}
+
+function PasswordSettings({ open, onToggle }: { open: boolean; onToggle: () => void }) {
+  const [currentPassword, setCurrentPassword] = useState("");
+  const [newPassword, setNewPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
+  const [saving, setSaving] = useState(false);
+  const [message, setMessage] = useState("");
+  const [error, setError] = useState("");
+
+  const submit = async (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    setMessage("");
+    setError("");
+    if (newPassword !== confirmPassword) {
+      setError("New passwords do not match.");
+      return;
+    }
+    setSaving(true);
+    try {
+      await authApi.changePassword({ currentPassword, newPassword, confirmPassword });
+      setCurrentPassword("");
+      setNewPassword("");
+      setConfirmPassword("");
+      setMessage("Password changed successfully.");
+    } catch (requestError) {
+      setError(getApiErrorMessage(requestError, "We could not change your password."));
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  return (
+    <section className={`${styles.profilePanel} ${styles.settingsAccordion}`}>
+      <button
+        className={styles.settingsAccordionHeader}
+        type="button"
+        aria-expanded={open}
+        aria-controls="password-settings-content"
+        onClick={onToggle}
+      >
+        <span className={styles.settingsAccordionIcon}><LockKeyhole aria-hidden="true" /></span>
+        <span className={styles.settingsAccordionCopy}>
+          <span className={styles.eyebrow}>Security</span>
+          <strong>Change password</strong>
+          <small>Keep your account protected with a secure password.</small>
+        </span>
+        <ChevronDown className={styles.settingsChevron} aria-hidden="true" />
+      </button>
+      <div id="password-settings-content" className={styles.settingsAccordionContent} data-open={open}>
+        <div>
+          <form className={styles.passwordForm} onSubmit={(event) => void submit(event)}>
+            <p>Enter your current password, then choose a new password with at least 8 characters.</p>
+            <PasswordField label="Current password" name="currentPassword" autoComplete="current-password" value={currentPassword} onChange={(event) => setCurrentPassword(event.target.value)} required />
+            <div className={styles.passwordGrid}>
+              <PasswordField label="New password" name="newPassword" autoComplete="new-password" minLength={8} value={newPassword} onChange={(event) => setNewPassword(event.target.value)} required />
+              <PasswordField label="Confirm new password" name="confirmPassword" autoComplete="new-password" minLength={8} value={confirmPassword} onChange={(event) => setConfirmPassword(event.target.value)} required />
+            </div>
+            {(message || error) && <p className={error ? styles.locationEditorError : styles.locationEditorMessage} role={error ? "alert" : "status"}>{error || message}</p>}
+            <button className={styles.passwordButton} type="submit" disabled={saving}>
+              {saving ? <LoaderCircle className={styles.spinner} aria-hidden="true" /> : <ShieldCheck aria-hidden="true" />}
+              <span>{saving ? "Saving…" : "Update password"}</span>
+            </button>
+          </form>
+        </div>
+      </div>
+    </section>
+  );
+}
+
 interface RoleDashboardProps {
   dashboard: OnboardingResponse;
   profileImageUrl: string | null;
@@ -87,6 +307,7 @@ interface RoleDashboardProps {
   onProfileImageChange: (files: FileList | null) => void;
   profileUploading: boolean;
   profileUploadMessage: string | null;
+  onLocationUpdated: (address: OnboardingResponse["address"]) => void;
   onSignOut: () => void;
 }
 
@@ -358,11 +579,13 @@ function TrainerDashboard({
   onProfileImageChange,
   profileUploading,
   profileUploadMessage,
+  onLocationUpdated,
   onSignOut,
 }: RoleDashboardProps) {
   const [gallery, setGallery] = useState(() =>
     images.filter((image) => image.type === "GALLERY"),
   );
+  const [trainerSection, setTrainerSection] = useState<"overview" | "packages" | "settings">("overview");
   const [uploading, setUploading] = useState(false);
   const [uploadMessage, setUploadMessage] = useState<string | null>(null);
   const [cameraOpen, setCameraOpen] = useState(false);
@@ -502,7 +725,7 @@ function TrainerDashboard({
     <div className={`${styles.shell} ${styles.trainerShell}`}>
       <AppHeader
         context="Trainer studio"
-        currentPage="Overview"
+        currentPage={trainerSection === "settings" ? "Settings" : trainerSection === "packages" ? "Packages & sales" : "Overview"}
         onSignOut={onSignOut}
       />
 
@@ -510,7 +733,7 @@ function TrainerDashboard({
         <aside className={styles.sidebar}>
           <span className={styles.sidebarTitle}>Your business</span>
           <nav className={styles.navigation} aria-label="Trainer navigation">
-            <button className={styles.activeNav} type="button">
+            <button className={trainerSection === "overview" ? styles.activeNav : undefined} type="button" onClick={() => setTrainerSection("overview")}>
               <LayoutDashboard aria-hidden="true" /> <span>Studio</span>
             </button>
             <button type="button">
@@ -518,6 +741,9 @@ function TrainerDashboard({
             </button>
             <button type="button">
               <UsersRound aria-hidden="true" /> <span>Clients</span>
+            </button>
+            <button className={trainerSection === "packages" ? styles.activeNav : undefined} type="button" onClick={() => setTrainerSection("packages")}>
+              <Dumbbell aria-hidden="true" /> <span>Packages & sales</span>
             </button>
             <button type="button">
               <Images aria-hidden="true" /> <span>Gallery</span>
@@ -528,7 +754,7 @@ function TrainerDashboard({
             <button type="button" onClick={() => window.location.assign('/trainer/cv-builder')}>
               <FileText aria-hidden="true" /> <span>CV Builder</span>
             </button>
-            <button type="button">
+            <button className={trainerSection === "settings" ? styles.activeNav : undefined} type="button" onClick={() => setTrainerSection("settings")}>
               <Settings aria-hidden="true" /> <span>Settings</span>
             </button>
           </nav>
@@ -548,6 +774,12 @@ function TrainerDashboard({
         </aside>
 
         <main className={`${styles.content} ${styles.trainerContent}`}>
+          {trainerSection === "settings" ? (
+            <LocationSettingsPage accountType="Trainer" address={dashboard.address} onUpdated={onLocationUpdated} />
+          ) : trainerSection === "packages" ? (
+            <TrainerPackagesPanel />
+          ) : (
+          <>
           <header className={styles.trainerWelcome}>
             <div>
               <span className={styles.eyebrow}>Trainer command center</span>
@@ -570,12 +802,13 @@ function TrainerDashboard({
 
           <section className={styles.trainerHero}>
             <div className={styles.trainerIdentity}>
-              <Avatar
-                className={styles.trainerAvatar}
-                name={name}
-                url={profileImageUrl}
-                onImageError={onProfileImageError}
-              />
+              <div className={styles.editableProfileImage}>
+                <Avatar className={styles.trainerAvatar} name={name} url={profileImageUrl} onImageError={onProfileImageError} />
+                <label className={styles.profileImageEdit} aria-label="Edit profile image">
+                  {profileUploading ? <LoaderCircle className={styles.spinner} aria-hidden="true" /> : <Pencil aria-hidden="true" />}
+                  <input type="file" accept="image/jpeg,image/png,image/webp" disabled={profileUploading} onChange={(event) => { onProfileImageChange(event.target.files); event.target.value = ""; }} />
+                </label>
+              </div>
               <div>
                 <span className={styles.liveBadge}>
                   <span /> Profile live
@@ -629,6 +862,8 @@ function TrainerDashboard({
               </div>
             </div>
           </section>
+
+          <SocialFeed mine showFilters={false} />
 
           <section className={styles.professionalDocuments} aria-labelledby="trainer-documents-title">
             <div className={styles.documentsHeading}>
@@ -870,6 +1105,8 @@ function TrainerDashboard({
               </section>
             </aside>
           </div>
+          </>
+          )}
         </main>
       </div>
 
@@ -928,6 +1165,7 @@ export function UserDashboardPage() {
   const [profileImageUrl, setProfileImageUrl] = useState<string | null>(null);
   const [profileUploading, setProfileUploading] = useState(false);
   const [profileUploadMessage, setProfileUploadMessage] = useState<string | null>(null);
+  const [memberSection, setMemberSection] = useState<MemberSection>("overview");
   const [loading, setLoading] = useState(
     role === "USER" || role === "TRAINER" || role === "STAFF",
   );
@@ -1003,8 +1241,10 @@ export function UserDashboardPage() {
       ]);
       setProfileImageUrl(uploaded.url);
       setProfileUploadMessage("Profile photo saved.");
-    } catch {
-      setProfileUploadMessage("We could not save that photo. Please try again.");
+    } catch (requestError) {
+      setProfileUploadMessage(
+        getApiErrorMessage(requestError, "We could not save that photo. Please try again."),
+      );
     } finally {
       setProfileUploading(false);
     }
@@ -1049,6 +1289,9 @@ export function UserDashboardPage() {
     .filter(Boolean)
     .join(", ");
   const hideBrokenImage = () => setProfileImageUrl(null);
+  const savedCoordinates = typeof dashboard.address.latitude === "number" && typeof dashboard.address.longitude === "number"
+    ? { latitude: dashboard.address.latitude, longitude: dashboard.address.longitude }
+    : undefined;
 
   if (role === "TRAINER") {
     return (
@@ -1060,8 +1303,97 @@ export function UserDashboardPage() {
         onProfileImageChange={(files) => void uploadProfileImage(files)}
         profileUploading={profileUploading}
         profileUploadMessage={profileUploadMessage}
+        onLocationUpdated={(address) => setDashboard((current) => current ? { ...current, address } : current)}
         onSignOut={signOut}
       />
+    );
+  }
+
+  if (role === "USER" && memberSection === "settings") {
+    return (
+      <div className={styles.shell}>
+        <AppHeader context="Member dashboard" currentPage="Settings" onSignOut={signOut} />
+        <div className={styles.page}>
+          <aside className={styles.sidebar}>
+            <span className={styles.sidebarTitle}>Workspace</span>
+            <MemberNavigation current="settings" onNavigate={setMemberSection} />
+            <div className={styles.sidebarProfile}>
+              <Avatar className={styles.miniAvatar} name={name} url={profileImageUrl} onImageError={hideBrokenImage} />
+              <div><strong>{name}</strong><span>Member account</span></div>
+            </div>
+          </aside>
+          <main className={styles.content}>
+            <LocationSettingsPage
+              accountType="Member"
+              address={dashboard.address}
+              onUpdated={(address) => setDashboard((current) => current ? { ...current, address } : current)}
+            />
+          </main>
+        </div>
+      </div>
+    );
+  }
+
+  if (role === "USER" && memberSection === "gyms") {
+    return (
+      <div className={styles.shell}>
+        <AppHeader context="Member dashboard" currentPage="Find gyms" onSignOut={signOut} />
+        <div className={styles.page}>
+          <aside className={styles.sidebar}>
+            <span className={styles.sidebarTitle}>Workspace</span>
+            <MemberNavigation current="gyms" onNavigate={setMemberSection} />
+            <div className={styles.sidebarProfile}>
+              <Avatar className={styles.miniAvatar} name={name} url={profileImageUrl} onImageError={hideBrokenImage} />
+              <div><strong>{name}</strong><span>Member account</span></div>
+            </div>
+          </aside>
+          <main className={styles.content}>
+            <GymDiscovery memberName={name} savedCoordinates={savedCoordinates} onBack={() => setMemberSection("overview")} />
+          </main>
+        </div>
+      </div>
+    );
+  }
+
+  if (role === "USER" && memberSection === "trainers") {
+    return (
+      <div className={styles.shell}>
+        <AppHeader context="Member dashboard" currentPage="Find trainers" onSignOut={signOut} />
+        <div className={styles.page}>
+          <aside className={styles.sidebar}>
+            <span className={styles.sidebarTitle}>Workspace</span>
+            <MemberNavigation current="trainers" onNavigate={setMemberSection} />
+            <div className={styles.sidebarProfile}>
+              <Avatar className={styles.miniAvatar} name={name} url={profileImageUrl} onImageError={hideBrokenImage} />
+              <div><strong>{name}</strong><span>Member account</span></div>
+            </div>
+          </aside>
+          <main className={styles.content}>
+            <TrainerDiscovery memberName={name} onBack={() => setMemberSection("overview")} />
+          </main>
+        </div>
+      </div>
+    );
+  }
+
+  if (role === "USER" && memberSection === "memberships") {
+    return (
+      <div className={styles.shell}>
+        <AppHeader context="Member dashboard" currentPage="My memberships" onSignOut={signOut} />
+        <div className={styles.page}>
+          <aside className={styles.sidebar}>
+            <span className={styles.sidebarTitle}>Workspace</span>
+            <MemberNavigation current="memberships" onNavigate={setMemberSection} />
+            <div className={styles.sidebarProfile}>
+              <Avatar className={styles.miniAvatar} name={name} url={profileImageUrl} onImageError={hideBrokenImage} />
+              <div><strong>{name}</strong><span>Member account</span></div>
+            </div>
+          </aside>
+          <main className={styles.content}>
+            <MemberMemberships memberName={name} savedCoordinates={savedCoordinates} onFindGyms={() => setMemberSection("gyms")} />
+          </main>
+        </div>
+      </div>
     );
   }
 
@@ -1076,28 +1408,17 @@ export function UserDashboardPage() {
       <div className={styles.page}>
         <aside className={styles.sidebar}>
           <span className={styles.sidebarTitle}>Workspace</span>
-          <nav className={styles.navigation} aria-label="Dashboard navigation">
-            <button className={styles.activeNav} type="button">
-              <LayoutDashboard aria-hidden="true" />
-              <span>Overview</span>
-            </button>
-            <button type="button">
-              <UserRound aria-hidden="true" />
-              <span>Profile</span>
-            </button>
-            <button type="button">
-              <CalendarDays aria-hidden="true" />
-              <span>Bookings</span>
-            </button>
-            <button type="button">
-              <MessageSquare aria-hidden="true" />
-              <span>Messages</span>
-            </button>
-            <button type="button">
-              <Settings aria-hidden="true" />
-              <span>Settings</span>
-            </button>
-          </nav>
+          {role === "USER" ? (
+            <MemberNavigation current="overview" onNavigate={setMemberSection} />
+          ) : (
+            <nav className={styles.navigation} aria-label="Dashboard navigation">
+              <button className={styles.activeNav} type="button"><LayoutDashboard aria-hidden="true" /><span>Overview</span></button>
+              <button type="button"><UserRound aria-hidden="true" /><span>Profile</span></button>
+              <button type="button"><CalendarDays aria-hidden="true" /><span>Bookings</span></button>
+              <button type="button"><MessageSquare aria-hidden="true" /><span>Messages</span></button>
+              <button type="button"><Settings aria-hidden="true" /><span>Settings</span></button>
+            </nav>
+          )}
 
           <div className={styles.sidebarProfile}>
             <Avatar
@@ -1138,12 +1459,13 @@ export function UserDashboardPage() {
               </p>
             </div>
             <div className={styles.heroProfile}>
-              <Avatar
-                className={styles.heroAvatar}
-                name={name}
-                url={profileImageUrl}
-                onImageError={hideBrokenImage}
-              />
+              <div className={styles.editableProfileImage}>
+                <Avatar className={styles.heroAvatar} name={name} url={profileImageUrl} onImageError={hideBrokenImage} />
+                <label className={styles.profileImageEdit} aria-label="Edit profile image">
+                  {profileUploading ? <LoaderCircle className={styles.spinner} aria-hidden="true" /> : <Pencil aria-hidden="true" />}
+                  <input type="file" accept="image/jpeg,image/png,image/webp" disabled={profileUploading} onChange={(event) => { void uploadProfileImage(event.target.files); event.target.value = ""; }} />
+                </label>
+              </div>
               <div>
                 <span>Your profile</span>
                 <strong>{name}</strong>
@@ -1154,67 +1476,7 @@ export function UserDashboardPage() {
             </div>
           </section>
 
-          <section
-            className={styles.discoverySection}
-            aria-labelledby="discovery-title"
-          >
-            <div className={styles.discoveryHeading}>
-              <div>
-                <span className={styles.eyebrow}>Explore your options</span>
-                <h2 id="discovery-title">What are you looking for?</h2>
-              </div>
-              <p>Start with a coach, a place to train, or both.</p>
-            </div>
-            <div className={styles.searchGrid}>
-              <article className={styles.searchCard}>
-                <div className={styles.cardIcon}>
-                  <Dumbbell aria-hidden="true" />
-                </div>
-                <span className={styles.cardLabel}>Personal coaching</span>
-                <h2>Find a trainer</h2>
-                <p>
-                  Explore professionals who match your pace, goals, and training
-                  style.
-                </p>
-                <div className={styles.cardMeta}>
-                  <span>
-                    <Sparkles aria-hidden="true" /> Goal-based matches
-                  </span>
-                  <span>
-                    <MapPin aria-hidden="true" /> Near you
-                  </span>
-                </div>
-                <button type="button" className={styles.searchButton}>
-                  <Search aria-hidden="true" /> <span>Search trainers</span>
-                  <ArrowUpRight aria-hidden="true" />
-                </button>
-              </article>
-
-              <article className={styles.searchCard}>
-                <div className={styles.cardIcon}>
-                  <Warehouse aria-hidden="true" />
-                </div>
-                <span className={styles.cardLabel}>Places near you</span>
-                <h2>Find a gym</h2>
-                <p>
-                  Discover fitness spaces built around how and where you want to
-                  train.
-                </p>
-                <div className={styles.cardMeta}>
-                  <span>
-                    <MapPin aria-hidden="true" /> Nearby locations
-                  </span>
-                  <span>
-                    <Warehouse aria-hidden="true" /> Flexible spaces
-                  </span>
-                </div>
-                <button type="button" className={styles.searchButton}>
-                  <Search aria-hidden="true" /> <span>Search gyms</span>
-                  <ArrowUpRight aria-hidden="true" />
-                </button>
-              </article>
-            </div>
-          </section>
+          <SocialFeed />
 
           <section className={styles.profilePanel}>
             <div className={styles.panelHeading}>

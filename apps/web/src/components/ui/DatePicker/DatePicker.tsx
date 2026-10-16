@@ -14,6 +14,10 @@ interface DatePickerProps {
   onChange: (value: string) => void
   label?: string
   max?: string
+  min?: string
+  allowFuture?: boolean
+  placeholder?: string
+  tone?: 'dark' | 'light'
 }
 
 const monthNames = [
@@ -47,22 +51,33 @@ function parseIsoDate(value: string) {
   return Number.isNaN(date.getTime()) ? undefined : date
 }
 
-function initialCalendarMonth(value: string) {
+function initialCalendarMonth(value: string, allowFuture: boolean) {
   const selected = parseIsoDate(value)
   if (selected) return new Date(selected.getFullYear(), selected.getMonth(), 1)
 
   const today = new Date()
-  return new Date(today.getFullYear() - 18, today.getMonth(), 1)
+  return new Date(allowFuture ? today.getFullYear() : today.getFullYear() - 18, today.getMonth(), 1)
 }
 
-export function DatePicker({ value, onChange, label = 'Date', max }: DatePickerProps) {
+export function DatePicker({
+  value,
+  onChange,
+  label = 'Date',
+  max,
+  min,
+  allowFuture = false,
+  placeholder = 'Choose your date of birth',
+  tone = 'dark',
+}: DatePickerProps) {
   const rootRef = useRef<HTMLDivElement>(null)
   const [open, setOpen] = useState(false)
   const [openSelector, setOpenSelector] = useState<'month' | 'year' | null>(null)
-  const [viewMonth, setViewMonth] = useState(() => initialCalendarMonth(value))
+  const [viewMonth, setViewMonth] = useState(() => initialCalendarMonth(value, allowFuture))
   const selectedDate = parseIsoDate(value)
-  const maximumDate = parseIsoDate(max ?? toIsoDate(new Date())) ?? new Date()
-  const currentYear = new Date().getFullYear()
+  const maximumDate = parseIsoDate(max ?? '') ?? (allowFuture
+    ? new Date(new Date().getFullYear() + 10, 11, 31)
+    : new Date())
+  const minimumDate = parseIsoDate(min ?? '')
 
   useEffect(() => {
     if (!open) return
@@ -95,11 +110,11 @@ export function DatePicker({ value, onChange, label = 'Date', max }: DatePickerP
   }, [viewMonth])
   const yearOptions = useMemo(
     () =>
-      Array.from({ length: currentYear - 1899 }, (_, index) => ({
-        value: currentYear - index,
-        label: String(currentYear - index),
+      Array.from({ length: maximumDate.getFullYear() - (minimumDate?.getFullYear() ?? 1900) + 1 }, (_, index) => ({
+        value: maximumDate.getFullYear() - index,
+        label: String(maximumDate.getFullYear() - index),
       })),
-    [currentYear],
+    [maximumDate, minimumDate],
   )
   const monthOptions = monthNames.map((month, index) => ({
     value: index,
@@ -112,7 +127,7 @@ export function DatePicker({ value, onChange, label = 'Date', max }: DatePickerP
         month: 'short',
         year: 'numeric',
       }).format(selectedDate)
-    : 'Choose your date of birth'
+    : placeholder
 
   const selectDate = (date: Date) => {
     onChange(toIsoDate(date))
@@ -129,9 +144,13 @@ export function DatePicker({ value, onChange, label = 'Date', max }: DatePickerP
     viewMonth.getFullYear() < maximumDate.getFullYear() ||
     (viewMonth.getFullYear() === maximumDate.getFullYear() &&
       viewMonth.getMonth() < maximumDate.getMonth())
+  const canMoveBackward = !minimumDate ||
+    viewMonth.getFullYear() > minimumDate.getFullYear() ||
+    (viewMonth.getFullYear() === minimumDate.getFullYear() &&
+      viewMonth.getMonth() > minimumDate.getMonth())
 
   return (
-    <div className={styles.datePicker} ref={rootRef}>
+    <div className={`${styles.datePicker} ${tone === 'light' ? styles.light : ''}`} ref={rootRef}>
       <button
         type="button"
         className={`${styles.trigger} ${open ? styles.open : ''}`}
@@ -152,6 +171,7 @@ export function DatePicker({ value, onChange, label = 'Date', max }: DatePickerP
               className={styles.navigationButton}
               onClick={() => changeMonth(-1)}
               aria-label="Previous month"
+              disabled={!canMoveBackward}
             >
               <ChevronLeft />
             </button>
@@ -204,7 +224,7 @@ export function DatePicker({ value, onChange, label = 'Date', max }: DatePickerP
               const isoDate = toIsoDate(date)
               const selected = isoDate === value
               const isToday = isoDate === toIsoDate(new Date())
-              const disabled = date > maximumDate
+              const disabled = date > maximumDate || Boolean(minimumDate && date < minimumDate)
 
               return (
                 <button

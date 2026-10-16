@@ -4,6 +4,7 @@ import {
   type ImageType,
   type OnboardingResponse,
   type TrainerDocumentResponse,
+  type UserAddressInput,
 } from "@swefton/shared/onboarding";
 import { config } from "../../../config";
 import { httpClient } from "../../../core/http/httpClient";
@@ -75,6 +76,11 @@ export const dashboardApi = {
     const data = await this.getImages();
 
     return data.find((image) => image.type === "PROFILE") ?? null;
+  },
+
+  async updateLocation(address: UserAddressInput) {
+    const { data } = await httpClient.put<UserAddressInput>('/user/address', address)
+    return data
   },
 
   async getImages(): Promise<ImageResponse[]> {

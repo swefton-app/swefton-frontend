@@ -5,6 +5,8 @@ import type {
   RegisterRequest,
   RegisterResponse,
   VerifyEmailRequest,
+  ResetPasswordRequest,
+  ChangePasswordRequest,
 } from "@swefton/shared/auth";
 import { authEndpoints } from "@swefton/shared/auth";
 import { httpClient } from "../../../core/http/httpClient";
@@ -69,6 +71,18 @@ export const authApi: AuthApi = {
 
   async resendVerificationCode(email: string) {
     await httpClient.post(authEndpoints.resendVerificationCode, { email });
+  },
+
+  async forgotPassword(email: string) {
+    await httpClient.post(authEndpoints.forgotPassword, { email });
+  },
+
+  async resetPassword(payload: ResetPasswordRequest) {
+    await httpClient.post(authEndpoints.resetPassword, payload);
+  },
+
+  async changePassword(payload: ChangePasswordRequest) {
+    await httpClient.post(authEndpoints.changePassword, payload);
   },
 
   async logout() {

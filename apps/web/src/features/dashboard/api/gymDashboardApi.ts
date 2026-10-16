@@ -40,6 +40,17 @@ export const gymDashboardApi = {
     return resolveGymMedia(data)
   },
 
+  async updateHours(gymId: number, payload: Pick<GymResponse, 'open24Hours' | 'weekdayOpenTime' | 'weekdayCloseTime' | 'weekendOpenTime' | 'weekendCloseTime'>) {
+    const { data } = await httpClient.patch<GymResponse>(`/gyms/${gymId}/hours`, payload)
+    return resolveGymMedia(data)
+  },
+
+  async updateImage(gymId: number, imageId: number, type: 'LOGO' | 'COVER') {
+    const endpoint = type === 'LOGO' ? 'logo' : 'cover'
+    const { data } = await httpClient.patch<GymResponse>(`/gyms/${gymId}/${endpoint}`, { imageId })
+    return resolveGymMedia(data)
+  },
+
   async uploadImage(file: File, type: ImageType, position: number) {
     const formData = new FormData()
     formData.append('file', file)

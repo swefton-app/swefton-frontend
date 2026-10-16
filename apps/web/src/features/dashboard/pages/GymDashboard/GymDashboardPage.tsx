@@ -3,7 +3,10 @@ import type { GymResponse, OnboardingResponse } from '@swefton/shared/onboarding
 import {
   Activity,
   ArrowRight,
+  BadgeDollarSign,
+  BarChart3,
   Building2,
+  CalendarDays,
   Check,
   ChevronDown,
   CircleAlert,
@@ -13,11 +16,14 @@ import {
   LoaderCircle,
   LogOut,
   MapPin,
+  Pencil,
   PanelTop,
   Plus,
+  Newspaper,
   RefreshCw,
   Settings2,
   UsersRound,
+  UserCheck,
 } from 'lucide-react'
 import sweftonMark from '../../../../assets/swefton-mark.png'
 import { tokenStorage } from '../../../../core/storage/tokenStorage'
@@ -29,16 +35,25 @@ import { gymDashboardApi } from '../../api/gymDashboardApi'
 import { FacilityLocationPicker } from '../../../location/components/FacilityLocationPicker/FacilityLocationPicker'
 import { CreateBusinessPanel } from './CreateBusinessPanel'
 import { MachinesPanel } from './MachinesPanel'
+import { MembershipsPanel } from './MembershipsPanel'
+import { SocialFeed } from '../../../feed/components/SocialFeed'
+import { AnalyticsPanel } from './AnalyticsPanel'
+import { ActivitiesPanel } from './ActivitiesPanel'
 import styles from './GymDashboardPage.module.css'
 
 import { StaffPanel } from './StaffPanel'
 
-type Section = 'overview' | 'facilities' | 'machines' | 'staff' | 'media' | 'operations' | 'create'
+type Section = 'overview' | 'facilities' | 'analytics' | 'activities' | 'posts' | 'machines' | 'plans' | 'memberships' | 'staff' | 'media' | 'operations' | 'create'
 
 const navigation: readonly { id: Section; label: string; icon: typeof LayoutGrid }[] = [
   { id: 'overview', label: 'Command center', icon: LayoutGrid },
   { id: 'facilities', label: 'Facilities', icon: Building2 },
+  { id: 'analytics', label: 'Analytics', icon: BarChart3 },
+  { id: 'activities', label: 'Activities', icon: CalendarDays },
+  { id: 'posts', label: 'Posts', icon: Newspaper },
   { id: 'machines', label: 'My machines', icon: Dumbbell },
+  { id: 'plans', label: 'Plans', icon: BadgeDollarSign },
+  { id: 'memberships', label: 'Memberships', icon: UserCheck },
   { id: 'staff', label: 'Staff', icon: UsersRound },
   { id: 'media', label: 'Media library', icon: Image },
   { id: 'operations', label: 'Readiness', icon: Activity },
@@ -47,7 +62,12 @@ const navigation: readonly { id: Section; label: string; icon: typeof LayoutGrid
 const sectionTitles: Record<Section, string> = {
   overview: 'Command center',
   facilities: 'Facilities',
+  analytics: 'Analytics',
+  activities: 'Activities',
+  posts: 'Posts',
   machines: 'Machine inventory',
+  plans: 'Plans',
+  memberships: 'Memberships',
   staff: 'Staff',
   media: 'Media library',
   operations: 'Readiness',
@@ -83,7 +103,7 @@ function readinessItems(gym: GymResponse) {
     },
     {
       label: 'Set daily opening hours',
-      ready: gym.open24Hours,
+      ready: gym.open24Hours || Boolean(gym.weekdayOpenTime && gym.weekdayCloseTime && gym.weekendOpenTime && gym.weekendCloseTime),
       readyCopy: 'No daily schedule is required because this gym is open 24 hours.',
       pendingCopy: 'Add opening and closing times for every day of the week.',
     },
@@ -103,6 +123,7 @@ export function GymDashboardPage() {
   const [loading, setLoading] = useState(true)
   const [refreshing, setRefreshing] = useState(false)
   const [error, setError] = useState('')
+  const [postComposerSignal, setPostComposerSignal] = useState(0)
 
   const load = useCallback(async (refresh = false) => {
     if (refresh) setRefreshing(true)
@@ -248,9 +269,16 @@ export function GymDashboardPage() {
             <h1>{sectionTitles[section]}</h1>
           </div>
           <div className={styles.topActions}>
-            <button className={styles.addBusiness} type="button" onClick={() => setSection('create')}>
-              <Plus /> Add another business
-            </button>
+            {(section === 'overview' || section === 'facilities') && (
+              <button className={styles.addBusiness} type="button" onClick={() => setSection('create')}>
+                <Plus /> Add another business
+              </button>
+            )}
+            {section === 'posts' && selected && (
+              <button className={styles.addBusiness} type="button" onClick={() => setPostComposerSignal((value) => value + 1)}>
+                <Plus /> Add post
+              </button>
+            )}
             {gyms.length > 1 && (
               <label className={styles.locationSelect}>
                 <Building2 />
@@ -264,9 +292,11 @@ export function GymDashboardPage() {
                 <ChevronDown />
               </label>
             )}
-            <button className={styles.refresh} type="button" onClick={() => void load(true)} disabled={refreshing}>
-              <RefreshCw className={refreshing ? styles.spin : ''} /> Refresh
-            </button>
+            {(section === 'overview' || section === 'facilities') && (
+              <button className={styles.refresh} type="button" onClick={() => void load(true)} disabled={refreshing}>
+                <RefreshCw className={refreshing ? styles.spin : ''} /> Refresh
+              </button>
+            )}
           </div>
         </header>
 
@@ -283,14 +313,29 @@ export function GymDashboardPage() {
             {section === 'overview' && (
               <Overview key={selected.id} gym={selected} locationCount={gyms.length} activeLocations={activeLocations} totalCapacity={totalCapacity} mediaCount={allMedia.length} onOpen={(next) => setSection(next)} onUpdated={businessUpdated} />
             )}
+            {section === 'posts' && (
+              <SocialFeed key={`posts-${selected.facilityId}`} facilityId={selected.facilityId} composerFacilityId={selected.facilityId} showFilters={false} theme="light" showAddButton={false} openComposerSignal={postComposerSignal} />
+            )}
             {section === 'facilities' && (
               <Facilities gyms={gyms} selectedId={selected.id} onSelect={selectBusiness} />
+            )}
+            {section === 'analytics' && (
+              <AnalyticsPanel key={`analytics-${selected.facilityId}`} facilityId={selected.facilityId} facilityName={selected.name} />
+            )}
+            {section === 'activities' && (
+              <ActivitiesPanel key={`activities-${selected.facilityId}`} facilityId={selected.facilityId} facilityName={selected.name} />
             )}
             {section === 'staff' && (
               <StaffPanel key={selected.facilityId} facilityId={selected.facilityId} facilityName={selected.name} />
             )}
             {section === 'machines' && (
               <MachinesPanel key={selected.facilityId} facilityId={selected.facilityId} facilityName={selected.name} facilityCategory={selected.category} />
+            )}
+            {section === 'memberships' && (
+              <MembershipsPanel key={`memberships-${selected.facilityId}`} facilityId={selected.facilityId} facilityName={selected.name} view="memberships" />
+            )}
+            {section === 'plans' && (
+              <MembershipsPanel key={`plans-${selected.facilityId}`} facilityId={selected.facilityId} facilityName={selected.name} view="plans" />
             )}
             {section === 'media' && <MediaLibrary media={allMedia} />}
             {section === 'operations' && <Operations gym={selected} />}
@@ -308,6 +353,33 @@ function Overview({ gym, locationCount, activeLocations, totalCapacity, mediaCou
   const [savingLocation, setSavingLocation] = useState(false)
   const [locationMessage, setLocationMessage] = useState('')
   const [locationError, setLocationError] = useState('')
+  const [hoursDraft, setHoursDraft] = useState({
+    open24Hours: gym.open24Hours,
+    weekdayOpenTime: gym.weekdayOpenTime ?? '06:00',
+    weekdayCloseTime: gym.weekdayCloseTime ?? '22:00',
+    weekendOpenTime: gym.weekendOpenTime ?? '08:00',
+    weekendCloseTime: gym.weekendCloseTime ?? '20:00',
+  })
+  const [savingHours, setSavingHours] = useState(false)
+  const [hoursMessage, setHoursMessage] = useState('')
+  const [hoursError, setHoursError] = useState('')
+  const [savingImage, setSavingImage] = useState<'LOGO' | 'COVER' | null>(null)
+  const [imageError, setImageError] = useState('')
+
+  const replaceImage = async (file: File | undefined, type: 'LOGO' | 'COVER') => {
+    if (!file) return
+    setSavingImage(type)
+    setImageError('')
+    try {
+      const uploaded = await gymDashboardApi.uploadImage(file, type, 0)
+      const updated = await gymDashboardApi.updateImage(gym.id, uploaded.id, type)
+      onUpdated(updated)
+    } catch (requestError) {
+      setImageError(getApiErrorMessage(requestError, `We could not update the ${type.toLowerCase()}.`))
+    } finally {
+      setSavingImage(null)
+    }
+  }
 
   const updateLocation = async (location: Pick<GymResponse, 'addressLine' | 'city' | 'state' | 'postalCode' | 'country' | 'formattedAddress' | 'latitude' | 'longitude'>) => {
     if (!location.formattedAddress || location.latitude === undefined || location.longitude === undefined) return
@@ -334,14 +406,41 @@ function Overview({ gym, locationCount, activeLocations, totalCapacity, mediaCou
     }
   }
 
+  const saveHours = async () => {
+    setSavingHours(true)
+    setHoursMessage('')
+    setHoursError('')
+    try {
+      const updated = await gymDashboardApi.updateHours(gym.id, hoursDraft)
+      onUpdated(updated)
+      setHoursMessage('Opening hours updated successfully.')
+    } catch (requestError) {
+      setHoursError(getApiErrorMessage(requestError, 'We could not update the opening hours.'))
+    } finally {
+      setSavingHours(false)
+    }
+  }
+
   return (
     <div className={styles.content}>
       <section className={styles.facilityHero} style={gym.coverImage ? { backgroundImage: `linear-gradient(90deg, rgba(14,18,17,.96), rgba(14,18,17,.7)), url(${gym.coverImage.url})` } : undefined}>
+        <label className={`${styles.imageEdit} ${styles.coverEdit}`}>
+          {savingImage === 'COVER' ? <LoaderCircle className={styles.spin} /> : <Pencil />}
+          <span>{savingImage === 'COVER' ? 'Updating cover' : 'Edit cover'}</span>
+          <input type="file" accept="image/jpeg,image/png,image/webp" disabled={savingImage !== null} onChange={(event) => { void replaceImage(event.target.files?.[0], 'COVER'); event.target.value = '' }} />
+        </label>
         <div className={styles.heroIdentity}>
-          <div className={styles.gymLogo}>{gym.logoImage ? <img src={gym.logoImage.url} alt="" /> : <Dumbbell />}</div>
+          <div className={styles.logoEditor}>
+            <div className={styles.gymLogo}>{gym.logoImage ? <img src={gym.logoImage.url} alt={`${gym.name} logo`} /> : <Dumbbell />}</div>
+            <label className={`${styles.imageEdit} ${styles.logoEdit}`} aria-label="Edit logo">
+              {savingImage === 'LOGO' ? <LoaderCircle className={styles.spin} /> : <Pencil />}
+              <input type="file" accept="image/jpeg,image/png,image/webp" disabled={savingImage !== null} onChange={(event) => { void replaceImage(event.target.files?.[0], 'LOGO'); event.target.value = '' }} />
+            </label>
+          </div>
           <div><span className={`${styles.status} ${statusTone(gym.status)}`}>{readable(gym.status)}</span><h2>{gym.name}</h2><p><MapPin /> {[gym.city, gym.country].filter(Boolean).join(', ')}</p></div>
         </div>
         <button type="button" onClick={() => onOpen('operations')}>Review readiness <ArrowRight /></button>
+        {imageError && <div className={styles.heroError} role="alert">{imageError}</div>}
       </section>
 
       <section className={styles.metrics}>
@@ -388,6 +487,21 @@ function Overview({ gym, locationCount, activeLocations, totalCapacity, mediaCou
             {locationError || (savingLocation ? 'Saving the new location…' : locationMessage)}
           </div>
         )}
+      </section>
+      <section className={`${styles.panel} ${styles.hoursPanel}`}>
+        <header><div><span className={styles.kicker}>Public schedule</span><h3>Opening hours</h3></div><Activity /></header>
+        <label className={styles.hoursToggle}>
+          <input type="checkbox" checked={hoursDraft.open24Hours} onChange={(event) => setHoursDraft((current) => ({ ...current, open24Hours: event.target.checked }))} />
+          <span><strong>Open 24 hours</strong><small>Members will see this gym as open all day, every day.</small></span>
+        </label>
+        {!hoursDraft.open24Hours && (
+          <div className={styles.hoursEditor}>
+            <div><strong>Monday – Friday</strong><label>Opens<input type="time" value={hoursDraft.weekdayOpenTime} onChange={(event) => setHoursDraft((current) => ({ ...current, weekdayOpenTime: event.target.value }))} /></label><label>Closes<input type="time" value={hoursDraft.weekdayCloseTime} onChange={(event) => setHoursDraft((current) => ({ ...current, weekdayCloseTime: event.target.value }))} /></label></div>
+            <div><strong>Saturday – Sunday</strong><label>Opens<input type="time" value={hoursDraft.weekendOpenTime} onChange={(event) => setHoursDraft((current) => ({ ...current, weekendOpenTime: event.target.value }))} /></label><label>Closes<input type="time" value={hoursDraft.weekendCloseTime} onChange={(event) => setHoursDraft((current) => ({ ...current, weekendCloseTime: event.target.value }))} /></label></div>
+          </div>
+        )}
+        <button className={styles.saveHours} type="button" onClick={() => void saveHours()} disabled={savingHours}>{savingHours ? <LoaderCircle className={styles.spin} /> : <Check />} Save opening hours</button>
+        {(hoursError || hoursMessage) && <div className={hoursError ? styles.locationError : styles.locationSuccess} role={hoursError ? 'alert' : 'status'}>{hoursError || hoursMessage}</div>}
       </section>
     </div>
   )

@@ -4,6 +4,7 @@ import type {
   FacilityMachineStatus,
   MachineResponse,
 } from '@swefton/shared/machine'
+import type { FacilityCategory } from '@swefton/shared/onboarding'
 import {
   MACHINE_MUSCLE_GROUPS,
   type MachineMuscleGroup,
@@ -28,6 +29,7 @@ import { Select, type SelectOption } from '../../../../components/ui/Select'
 import { getApiErrorMessage } from '../../../../core/http/getApiErrorMessage'
 import { facilityMachineApi } from '../../api/facilityMachineApi'
 import { machineApi } from '../../api/machineApi'
+import { MachineEditor } from '../AdminDashboard/AdminDashboard'
 import styles from './MachinesPanel.module.css'
 
 type View = 'catalog' | 'inventory'
@@ -74,6 +76,7 @@ export function MachinesPanel({ facilityId, facilityName, facilityCategory }: Ma
   const [savingId, setSavingId] = useState<number | null>(null)
   const [error, setError] = useState('')
   const [notice, setNotice] = useState('')
+  const [showMachineEditor, setShowMachineEditor] = useState(false)
 
   useEffect(() => {
     let active = true
@@ -112,7 +115,7 @@ export function MachinesPanel({ facilityId, facilityName, facilityCategory }: Ma
         || machine.movements.some((movement) => normalized(movement.muscleGroup) === muscleFilter)
       if (!matchesMuscle) return false
       if (!search) return true
-      return [machine.name, machine.code, ...muscleGroups(machine)]
+      return [machine.name, ...muscleGroups(machine)]
         .some((value) => value.toLowerCase().includes(search))
     })
   }, [catalog, facilityCategory, muscleFilter, query])
@@ -189,9 +192,11 @@ export function MachinesPanel({ facilityId, facilityName, facilityCategory }: Ma
     <div className={styles.content}>
       <section className={styles.header}>
         <div><span>Equipment inventory</span><h2>{facilityName}</h2><p>Choose equipment from the Swefton catalog and record how many units are available.</p></div>
-        <div className={styles.tabs}>
-          <button className={view === 'catalog' ? styles.activeTab : ''} type="button" onClick={() => setView('catalog')}><PackagePlus /> Add machines</button>
-          <button className={view === 'inventory' ? styles.activeTab : ''} type="button" onClick={() => setView('inventory')}><ListChecks /> My machines <b>{inventory.length}</b></button>
+        <div>
+          <div className={styles.tabs}>
+            <button className={view === 'catalog' ? styles.activeTab : ''} type="button" onClick={() => { setView('catalog'); setShowMachineEditor(true) }}><PackagePlus /> Add machines</button>
+            <button className={view === 'inventory' ? styles.activeTab : ''} type="button" onClick={() => setView('inventory')}><ListChecks /> My machines <b>{inventory.length}</b></button>
+          </div>
         </div>
       </section>
 
@@ -208,7 +213,7 @@ export function MachinesPanel({ facilityId, facilityName, facilityCategory }: Ma
               type="search"
               value={query}
               onChange={(event) => setQuery(event.target.value)}
-              placeholder="Search by machine, code, or muscle group"
+              placeholder="Search by machine or muscle group"
               trailing={<span className={styles.searchCount}>{compatibleMachines.length} available</span>}
             />
             <div className={styles.selectField}>
@@ -235,7 +240,6 @@ export function MachinesPanel({ facilityId, facilityName, facilityCategory }: Ma
                   <article className={`${styles.card} ${registered ? styles.registered : ''}`} key={machine.id}>
                     <div className={styles.image}>
                       {machine.images[0] ? <img src={machine.images[0].url} alt={machine.name} /> : <Dumbbell />}
-                      <span className={styles.codeBadge}>{machine.code}</span>
                       {registered && <span className={styles.registeredBadge}><Check /> In your gym</span>}
                     </div>
                     <div className={styles.cardBody}>
@@ -271,7 +275,7 @@ export function MachinesPanel({ facilityId, facilityName, facilityCategory }: Ma
                 <div className={styles.image}>{machine?.images[0] ? <img src={machine.images[0].url} alt={item.machineName} /> : <Dumbbell />}<span className={styles.quantityBadge}>{item.quantity} unit{item.quantity === 1 ? '' : 's'}</span></div>
                 <div className={styles.cardBody}>
                   <div className={styles.cardHeading}>
-                    <div><small>{item.machineCode} · {item.status}</small><h3>{item.machineName}</h3></div>
+                    <div><small>{item.status}</small><h3>{item.machineName}</h3></div>
                     <span>{item.movements.length} guide{item.movements.length === 1 ? '' : 's'}</span>
                   </div>
                   <div className={styles.muscles}>{muscleGroups(machine ?? { movements: item.movements }).map((group) => <span key={group}>{group}</span>)}</div>
@@ -298,6 +302,21 @@ export function MachinesPanel({ facilityId, facilityName, facilityCategory }: Ma
       ) : <Empty title="No machines added yet" copy="Open Add machines, choose equipment, and enter the quantity available in your gym." action={<button type="button" onClick={() => setView('catalog')}><Plus /> Add your first machine</button>} />}
 
       {details && <MachineDetails machine={details} onClose={() => setDetails(null)} />}
+      {showMachineEditor && (
+        <MachineEditor
+          machine={null}
+          initialFacilityCategory={normalized(facilityCategory) as FacilityCategory}
+          lockFacilityCategory
+          tone="light"
+          onClose={() => setShowMachineEditor(false)}
+          onSaved={(machine) => {
+            setCatalog((current) => [machine, ...current])
+            setNotice(`${machine.name} was created. You can now choose its quantity and add it to ${facilityName}.`)
+            setShowMachineEditor(false)
+            setView('catalog')
+          }}
+        />
+      )}
     </div>
   )
 }
@@ -361,7 +380,7 @@ function MachineDetails({ machine, onClose }: { machine: MachineResponse; onClos
   return (
     <div className={styles.backdrop} role="presentation" onMouseDown={(event) => { if (event.target === event.currentTarget) onClose() }}>
       <section className={styles.dialog} role="dialog" aria-modal="true" aria-labelledby="machine-details-title">
-        <header><div><span>{machine.code}</span><h2 id="machine-details-title">{machine.name}</h2><p>{machine.description || 'No description provided.'}</p></div><button type="button" onClick={onClose} aria-label="Close details"><X /></button></header>
+        <header><div><h2 id="machine-details-title">{machine.name}</h2><p>{machine.description || 'No description provided.'}</p></div><button type="button" onClick={onClose} aria-label="Close details"><X /></button></header>
         {machine.images.length > 0 && <div className={styles.detailImages}>{machine.images.map((image) => <img key={image.id} src={image.url} alt={image.originalName} />)}</div>}
         <div className={styles.movementList}>
           {machine.movements.map((movement) => (

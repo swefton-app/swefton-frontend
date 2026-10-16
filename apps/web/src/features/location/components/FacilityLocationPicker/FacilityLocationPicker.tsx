@@ -2,26 +2,39 @@ import { useEffect, useRef, useState, type FormEvent } from 'react'
 import { createPortal } from 'react-dom'
 import L, { type Map as LeafletMap, type Marker } from 'leaflet'
 import 'leaflet/dist/leaflet.css'
-import type { GymInput } from '@swefton/shared/onboarding'
 import { Check, Crosshair, LoaderCircle, MapPin, Search, X } from 'lucide-react'
 import { config } from '../../../../config'
 import { geocodingApi, type GeocodingResult } from '../../api/geocodingApi'
 import styles from './FacilityLocationPicker.module.css'
 
-type LocationFields = Pick<
-  GymInput,
-  'addressLine' | 'city' | 'state' | 'postalCode' | 'country' | 'formattedAddress' | 'latitude' | 'longitude'
->
+export interface LocationFields {
+  addressLine: string
+  city: string
+  state?: string
+  postalCode?: string
+  country: string
+  formattedAddress?: string
+  latitude?: number
+  longitude?: number
+}
 
 interface FacilityLocationPickerProps {
   value: LocationFields
   onChange: (location: LocationFields) => void
   error?: string
   tone?: 'light' | 'dark'
+  kind?: 'facility' | 'home'
   disabled?: boolean
 }
 
 const DEFAULT_CENTER: [number, number] = [41.3275, 19.8187]
+
+type LocatedFields = LocationFields & { latitude: number; longitude: number }
+
+function hasValidCoordinates(location: LocationFields | null | undefined): location is LocatedFields {
+  return typeof location?.latitude === 'number' && Number.isFinite(location.latitude) &&
+    typeof location.longitude === 'number' && Number.isFinite(location.longitude)
+}
 
 function administrativeAreaName(value?: string) {
   return value?.replace(/\s+(?:County|Municipality)$/i, '').trim()
@@ -68,6 +81,7 @@ export function FacilityLocationPicker({
   onChange,
   error,
   tone = 'light',
+  kind = 'facility',
   disabled = false,
 }: FacilityLocationPickerProps) {
   const [open, setOpen] = useState(false)
@@ -81,7 +95,7 @@ export function FacilityLocationPicker({
   const markerRef = useRef<Marker | null>(null)
   const requestIdRef = useRef(0)
 
-  const selected = value.latitude !== undefined && value.longitude !== undefined
+  const selected = hasValidCoordinates(value)
 
   const showPicker = () => {
     setQuery(value.formattedAddress || [value.addressLine, value.city, value.country].filter(Boolean).join(', '))
@@ -141,9 +155,9 @@ export function FacilityLocationPicker({
 
   useEffect(() => {
     if (!open || !mapElementRef.current || mapRef.current) return
-    const hasCoordinates = draft?.latitude !== undefined && draft.longitude !== undefined
+    const hasCoordinates = hasValidCoordinates(draft)
     const center: [number, number] = hasCoordinates
-      ? [draft.latitude as number, draft.longitude as number]
+      ? [draft.latitude, draft.longitude]
       : DEFAULT_CENTER
     const map = L.map(mapElementRef.current, { zoomControl: true }).setView(center, hasCoordinates ? 17 : 7)
     L.tileLayer(config.mapTileUrl, {
@@ -205,7 +219,7 @@ export function FacilityLocationPicker({
     setQuery(location.formattedAddress ?? '')
     setResults([])
     setMessage('Location selected. You can drag the pin to fine-tune it.')
-    if (location.latitude !== undefined && location.longitude !== undefined) {
+    if (hasValidCoordinates(location)) {
       setMapPosition(location.latitude, location.longitude)
     }
   }
@@ -228,7 +242,7 @@ export function FacilityLocationPicker({
   }
 
   const confirm = () => {
-    if (!draft?.formattedAddress || draft.latitude === undefined || draft.longitude === undefined) return
+    if (!draft?.formattedAddress || !hasValidCoordinates(draft)) return
     onChange(draft)
     setOpen(false)
   }
@@ -239,12 +253,12 @@ export function FacilityLocationPicker({
         <MapPin />
         <span>
           <strong>{selected ? 'Change map location' : 'Choose exact location on map'}</strong>
-          <small>{selected ? value.formattedAddress || `${value.latitude}, ${value.longitude}` : 'Search, click the map, or drag the pin'}</small>
+          <small>{selected ? value.formattedAddress || [value.addressLine, value.city, value.country].filter(Boolean).join(', ') || `${value.latitude}, ${value.longitude}` : 'Search, click the map, or drag the pin'}</small>
         </span>
         {selected && <Check className={styles.check} />}
       </button>
       {error && <small className={styles.fieldError}>{error}</small>}
-      {selected && <div className={styles.coordinates}>Lat {value.latitude?.toFixed(7)} · Lng {value.longitude?.toFixed(7)}</div>}
+      {selected && <div className={styles.coordinates}>Lat {value.latitude.toFixed(7)} · Lng {value.longitude.toFixed(7)}</div>}
 
       {open && createPortal(
         <div className={styles.backdrop} role="presentation" onMouseDown={(event) => {
@@ -253,9 +267,9 @@ export function FacilityLocationPicker({
           <section className={styles.dialog} role="dialog" aria-modal="true" aria-labelledby="location-picker-title">
             <header className={styles.dialogHeader}>
               <div>
-                <span>Facility location</span>
+                <span>{kind === 'home' ? 'Registered location' : 'Facility location'}</span>
                 <h2 id="location-picker-title">Choose the exact place</h2>
-                <p>Search for an address, then click the building or drag the pin.</p>
+                <p>{kind === 'home' ? 'Search for your address, then click the map or drag the pin.' : 'Search for an address, then click the building or drag the pin.'}</p>
               </div>
               <button type="button" onClick={() => setOpen(false)} aria-label="Close map"><X /></button>
             </header>
@@ -277,7 +291,7 @@ export function FacilityLocationPicker({
             )}
 
             <div className={styles.mapWrap}>
-              <div ref={mapElementRef} className={styles.map} aria-label="Interactive facility location map" />
+            <div ref={mapElementRef} className={styles.map} aria-label={`Interactive ${kind === 'home' ? 'registered' : 'facility'} location map`} />
               <button type="button" className={styles.locateButton} onClick={useCurrentLocation} disabled={busy}>
                 <Crosshair /> Use my location
               </button>
@@ -285,10 +299,10 @@ export function FacilityLocationPicker({
 
             <div className={styles.selection}>
               <div>
-                <span>{busy && <LoaderCircle className={styles.spin} />}{message || 'Click the map to select the facility entrance.'}</span>
+                <span>{busy && <LoaderCircle className={styles.spin} />}{message || (kind === 'home' ? 'Click the map to select your registered location.' : 'Click the map to select the facility entrance.')}</span>
                 {draft?.formattedAddress && <strong>{draft.formattedAddress}</strong>}
               </div>
-              {draft?.latitude !== undefined && draft.longitude !== undefined && (
+              {hasValidCoordinates(draft) && (
                 <small>{draft.latitude.toFixed(7)}, {draft.longitude.toFixed(7)}</small>
               )}
             </div>

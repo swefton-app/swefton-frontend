@@ -61,7 +61,6 @@ export interface MachineImageResponse {
 
 export interface MachineInput {
   name: string
-  code: string
   description?: string
   facilityCategory: FacilityCategory
   movements: MachineMovementInput[]
@@ -97,7 +96,6 @@ export interface FacilityMachineResponse {
   facilityId: number
   machineId: number
   machineName: string
-  machineCode: string
   facilityCategory: string
   movements: MachineMovementResponse[]
   quantity: number

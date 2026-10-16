@@ -71,7 +71,26 @@
 .noticeMessage { color: #8ef1b1; border-color: color-mix(in srgb, var(--color-success) 35%, transparent); background: color-mix(in srgb, var(--color-success) 8%, transparent); }
 
 .modalBackdrop { position: fixed; z-index: 100; inset: 0; display: grid; place-items: center; padding: 24px; background: rgb(0 0 0 / 78%); backdrop-filter: blur(8px); }
+.lightBackdrop { background: rgb(26 34 29 / 48%); }
 .editor { width: min(900px, 100%); max-height: calc(100vh - 48px); overflow: auto; border: 1px solid var(--color-border); border-radius: 20px; background: var(--color-surface); box-shadow: 0 32px 100px rgb(0 0 0 / 55%); }
+.lightEditor {
+  --color-background-primary: #17201b;
+  --color-background-secondary: #f5f8f1;
+  --color-surface: #ffffff;
+  --color-surface-elevated: #eef3e8;
+  --color-text-primary: #202a23;
+  --color-text-secondary: #536057;
+  --color-text-muted: #7b867e;
+  --color-text-subdued: #939d95;
+  --color-border: #cbd5c7;
+  --color-border-subtle: #e0e6dd;
+  --color-brand-cyan: #8fbe36;
+  color: var(--color-text-primary);
+  color-scheme: light;
+  box-shadow: 0 28px 80px rgb(28 41 31 / 24%);
+}
+.lightEditor .formGrid select { color-scheme: light; }
+.lightEditor .primaryButton { background: #b9f34b; box-shadow: 0 9px 24px rgb(125 176 37 / 20%); }
 .editorHeader { position: sticky; z-index: 3; top: 0; display: flex; align-items: flex-start; justify-content: space-between; gap: 20px; padding: 23px 25px; border-bottom: 1px solid var(--color-border-subtle); background: color-mix(in srgb, var(--color-surface) 92%, transparent); backdrop-filter: blur(15px); }
 .editorHeader h2 { margin-top: 6px; font-size: 23px; }
 .editorHeader p { margin-top: 6px; color: var(--color-text-muted); font-size: 11px; line-height: 1.5; }

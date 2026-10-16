@@ -3,6 +3,10 @@
 .header > div:first-child > span { color: #a5b0a8; font-size: 8px; font-weight: 850; letter-spacing: .14em; text-transform: uppercase; }
 .header h2 { margin: 7px 0; font-size: 27px; letter-spacing: -.04em; }
 .header p { max-width: 600px; margin: 0; color: #9ca8a0; font-size: 10px; line-height: 1.6; }
+.header > div:last-child { display: grid; justify-items: end; gap: 9px; }
+.createButton { min-height: 38px; display: flex; align-items: center; gap: 7px; padding: 0 13px; color: #17201b; border: 0; border-radius: 9px; background: #b9f34b; cursor: pointer; font-size: 9px; font-weight: 900; }
+.createButton:hover { background: #aee73f; }
+.createButton svg { width: 13px; }
 .tabs { display: flex; gap: 8px; }
 .tabs button { min-height: 44px; display: flex; align-items: center; gap: 8px; padding: 0 14px; color: #aeb9b1; border: 1px solid #354139; border-radius: 10px; background: #202a24; cursor: pointer; font-size: 10px; font-weight: 800; }
 .tabs button.activeTab { color: #17201b; border-color: #b9f34b; background: #b9f34b; }

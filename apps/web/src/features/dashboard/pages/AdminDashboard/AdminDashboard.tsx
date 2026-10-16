@@ -40,7 +40,6 @@ interface AdminDashboardProps {
 
 interface MachineFormState {
   name: string
-  code: string
   description: string
   facilityCategory: FacilityCategory
   movements: MovementFormState[]
@@ -77,12 +76,11 @@ function emptyMovement(position = 0): MovementFormState {
   }
 }
 
-function emptyForm(): MachineFormState {
+function emptyForm(facilityCategory: FacilityCategory = 'GYM'): MachineFormState {
   return {
     name: '',
-    code: '',
     description: '',
-    facilityCategory: 'GYM',
+    facilityCategory,
     movements: [emptyMovement()],
     existingImages: [],
     newImages: [],
@@ -92,7 +90,6 @@ function emptyForm(): MachineFormState {
 function formFromMachine(machine: MachineResponse): MachineFormState {
   return {
     name: machine.name,
-    code: machine.code,
     description: machine.description ?? '',
     facilityCategory: enumValue<FacilityCategory>(machine.facilityCategory),
     movements: machine.movements.map((movement, position) => ({
@@ -109,17 +106,23 @@ function formFromMachine(machine: MachineResponse): MachineFormState {
   }
 }
 
-function MachineEditor({
+export function MachineEditor({
   machine,
   onClose,
   onSaved,
+  initialFacilityCategory,
+  lockFacilityCategory = false,
+  tone = 'dark',
 }: {
   machine: MachineResponse | null
   onClose: () => void
   onSaved: (machine: MachineResponse, created: boolean) => void
+  initialFacilityCategory?: FacilityCategory
+  lockFacilityCategory?: boolean
+  tone?: 'dark' | 'light'
 }) {
   const [form, setForm] = useState<MachineFormState>(() =>
-    machine ? formFromMachine(machine) : emptyForm(),
+    machine ? formFromMachine(machine) : emptyForm(initialFacilityCategory),
   )
   const [saving, setSaving] = useState(false)
   const [error, setError] = useState('')
@@ -248,7 +251,6 @@ function MachineEditor({
 
       const payload: MachineInput = {
         name: form.name.trim(),
-        code: form.code.trim(),
         description: form.description.trim() || undefined,
         facilityCategory: form.facilityCategory,
         movements,
@@ -270,8 +272,8 @@ function MachineEditor({
   }
 
   return (
-    <div className={styles.modalBackdrop} role="presentation">
-      <section className={styles.editor} role="dialog" aria-modal="true" aria-labelledby="machine-editor-title">
+    <div className={`${styles.modalBackdrop} ${tone === 'light' ? styles.lightBackdrop : ''}`} role="presentation">
+      <section className={`${styles.editor} ${tone === 'light' ? styles.lightEditor : ''}`} role="dialog" aria-modal="true" aria-labelledby="machine-editor-title">
         <header className={styles.editorHeader}>
           <div>
             <span className={styles.eyebrow}>{machine ? 'Update catalog item' : 'New catalog item'}</span>
@@ -289,9 +291,8 @@ function MachineEditor({
           <fieldset disabled={saving}>
             <legend>Machine details</legend>
             <div className={styles.formGrid}>
-              <label><span>Name</span><input value={form.name} onChange={(event) => setField('name', event.target.value)} required maxLength={150} placeholder="Leg press" /></label>
-              <label><span>Unique code</span><input value={form.code} onChange={(event) => setField('code', event.target.value)} required maxLength={100} placeholder="LEG-PRESS-01" /></label>
-              <label><span>Facility category</span><select value={form.facilityCategory} onChange={(event) => setField('facilityCategory', event.target.value as FacilityCategory)}>{FACILITY_CATEGORIES.map((category) => <option key={category} value={category}>{labels.facilityCategory(category)}</option>)}</select></label>
+              <label><span>Name</span><input value={form.name} onChange={(event) => setField('name', event.target.value)} required maxLength={150} /></label>
+              <label><span>Facility category</span><select disabled={lockFacilityCategory} value={form.facilityCategory} onChange={(event) => setField('facilityCategory', event.target.value as FacilityCategory)}>{FACILITY_CATEGORIES.map((category) => <option key={category} value={category}>{labels.facilityCategory(category)}</option>)}</select></label>
               <label className={styles.fullWidth}><span>Description <small>Optional</small></span><textarea value={form.description} onChange={(event) => setField('description', event.target.value)} maxLength={5000} rows={3} placeholder="What this machine is designed for and how it fits into a workout." /></label>
             </div>
           </fieldset>
@@ -371,7 +372,7 @@ export function AdminDashboard({ onSignOut }: AdminDashboardProps) {
     const normalized = query.trim().toLowerCase()
     if (!normalized) return machines
     return machines.filter((machine) =>
-      [machine.name, machine.code, machine.facilityCategory]
+      [machine.name, machine.facilityCategory]
         .some((value) => value.toLowerCase().includes(normalized)),
     )
   }, [machines, query])
@@ -414,11 +415,10 @@ export function AdminDashboard({ onSignOut }: AdminDashboardProps) {
         <section className={styles.catalogPanel}>
           <header className={styles.catalogHeader}>
             <div><span className={styles.eyebrow}>Equipment library</span><h2>All machines</h2><p>{machines.length === 1 ? '1 catalog item' : `${machines.length} catalog items`}</p></div>
-            <button className={styles.primaryButton} type="button" onClick={() => { setNotice(''); setEditorMachine(null) }}><Plus aria-hidden="true" /> Add machine</button>
           </header>
 
           <div className={styles.toolbar}>
-            <label><Search aria-hidden="true" /><input type="search" value={query} onChange={(event) => setQuery(event.target.value)} placeholder="Search by name, code, or facility category..." /><span>{visibleMachines.length} shown</span></label>
+            <label><Search aria-hidden="true" /><input type="search" value={query} onChange={(event) => setQuery(event.target.value)} placeholder="Search by name or facility category..." /><span>{visibleMachines.length} shown</span></label>
           </div>
 
           {error && <div className={styles.errorMessage} role="alert"><AlertTriangle aria-hidden="true" /> {error}</div>}
@@ -427,12 +427,12 @@ export function AdminDashboard({ onSignOut }: AdminDashboardProps) {
           {loading ? (
             <div className={styles.emptyState}><LoaderCircle className={styles.spinner} aria-hidden="true" /><h3>Loading machine catalog</h3></div>
           ) : visibleMachines.length === 0 ? (
-            <div className={styles.emptyState}><Dumbbell aria-hidden="true" /><h3>{query ? 'No matching machines' : 'Your machine catalog is empty'}</h3><p>{query ? 'Try another name, code, or facility category.' : 'Add the first machine to make it available in the system.'}</p>{!query && <button className={styles.primaryButton} type="button" onClick={() => setEditorMachine(null)}><Plus aria-hidden="true" /> Add first machine</button>}</div>
+            <div className={styles.emptyState}><Dumbbell aria-hidden="true" /><h3>{query ? 'No matching machines' : 'The machine catalog is empty'}</h3><p>{query ? 'Try another name or facility category.' : 'Facility owners can add machines from their facility dashboard.'}</p></div>
           ) : (
             <div className={styles.machineGrid}>
               {visibleMachines.map((machine) => (
                 <article className={styles.machineCard} key={machine.id}>
-                  <div className={styles.machineImage}>{machine.images[0] ? <img src={machine.images[0].url} alt={machine.name} /> : <Dumbbell aria-hidden="true" />}<span>{machine.code}</span></div>
+                  <div className={styles.machineImage}>{machine.images[0] ? <img src={machine.images[0].url} alt={machine.name} /> : <Dumbbell aria-hidden="true" />}</div>
                   <div className={styles.machineBody}>
                     <div className={styles.machineTitle}><div><h3>{machine.name}</h3></div><span>{machine.facilityCategory}</span></div>
                     <p className={styles.machineDescription}>{machine.description || 'No description provided.'}</p>
