@@ -1,13 +1,17 @@
 import { useEffect, useRef, useState } from 'react'
 import type { AuthResponse, RoleCode } from '@swefton/shared/auth'
 import { config } from '../../../../config'
-import { authenticateWithGoogle } from '../../api/googleAuthApi'
+import { onboardingPrefillStorage } from '../../../../core/storage/onboardingPrefillStorage'
+import {
+  authenticateWithGoogle,
+  getGoogleOnboardingPrefill,
+} from '../../api/googleAuthApi'
 import { FormMessage } from '../FormMessage'
 import styles from './GoogleSignInButton.module.css'
 
 interface GoogleSignInButtonProps {
   role?: RoleCode
-  onAuthenticated: (response: AuthResponse) => void
+  onAuthenticated: (response: AuthResponse) => void | Promise<void>
 }
 
 export function GoogleSignInButton({ role, onAuthenticated }: GoogleSignInButtonProps) {
@@ -34,7 +38,10 @@ export function GoogleSignInButton({ role, onAuthenticated }: GoogleSignInButton
           try {
             setError(null)
             const auth = await authenticateWithGoogle(response.credential, roleRef.current)
-            authenticatedRef.current(auth)
+            onboardingPrefillStorage.save(
+              getGoogleOnboardingPrefill(response.credential),
+            )
+            await authenticatedRef.current(auth)
           } catch (exception) {
             setError(
               exception instanceof Error

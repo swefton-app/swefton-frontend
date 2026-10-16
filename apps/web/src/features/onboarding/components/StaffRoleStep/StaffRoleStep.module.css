@@ -1,0 +1,17 @@
+.facility { display: grid; grid-template-columns: 34px auto 1fr; align-items: center; gap: 9px; padding: 12px 14px; color: #778292; border: 1px solid #2b323e; border-radius: 11px; background: #0e1218; font-size: 9px; }
+.facility > svg { width: 16px; color: #42cae3; }
+.facility strong { color: #e8edf5; text-align: right; }
+.grid { display: grid; grid-template-columns: 1fr 1fr; gap: 11px; }
+.grid button { min-height: 105px; display: grid; grid-template-columns: 42px 1fr 23px; align-items: center; gap: 11px; padding: 15px; color: #b5bdc9; border: 1px solid #2b323e; border-radius: 13px; background: #0d1016; cursor: pointer; text-align: left; transition: border-color .18s, background .18s, transform .18s; }
+.grid button:hover { transform: translateY(-1px); border-color: #465161; background: #111620; }
+.grid button.selected { border-color: #8dbe36; background: rgba(185,243,75,.07); box-shadow: 0 0 0 3px rgba(185,243,75,.06); }
+.icon { width: 42px; height: 42px; display: grid; place-items: center; color: #768292; border-radius: 11px; background: #191e27; }
+.selected .icon { color: #b9f34b; background: #1d2818; }
+.icon svg { width: 18px; }
+.grid button > span:nth-child(2) { display: grid; gap: 6px; }
+.grid strong { color: #edf1f7; font-size: 11px; }
+.grid small { color: #697484; font-size: 8px; line-height: 1.45; }
+.check { width: 22px; height: 22px; display: grid; place-items: center; color: #14200f; border: 1px solid #323a46; border-radius: 999px; }
+.selected .check { border-color: #b9f34b; background: #b9f34b; }
+.check svg { width: 12px; }
+@media (max-width: 640px) { .grid { grid-template-columns: 1fr; } .facility { grid-template-columns: 30px 1fr; } .facility strong { grid-column: 2; text-align: left; } }

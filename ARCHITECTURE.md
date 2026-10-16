@@ -19,6 +19,7 @@ apps/mobile ---/
 - `auth/roles.ts`: role values and shared role copy.
 - `auth/validation.ts`: password and verification rules.
 - `auth/postAuth.ts`: semantic post-auth destinations, independent of any router.
+- `onboarding`: platform-neutral onboarding payloads, endpoints, steps, and validation.
 - `design`: colors, spacing, radius, and typography for Web and Mobile consumers.
 
 ## Web application

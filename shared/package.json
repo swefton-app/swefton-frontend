@@ -8,6 +8,13 @@
   },
   "exports": {
     "./auth": "./src/auth/index.ts",
-    "./design": "./src/design/index.ts"
+    "./cv": "./src/cv/index.ts",
+    "./design": "./src/design/index.ts",
+    "./onboarding": "./src/onboarding/index.ts",
+    "./dashboard": "./src/dashboard/index.ts",
+    "./machine": "./src/machine/index.ts",
+    "./membership": "./src/membership/index.ts",
+    "./staff": "./src/staff/index.ts",
+    "./trainer": "./src/trainer/index.ts"
   }
 }

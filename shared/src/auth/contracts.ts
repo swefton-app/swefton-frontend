@@ -1,6 +1,6 @@
-export type RoleCode = 'USER' | 'TRAINER' | 'FACILITY_OWNER' | 'ADMIN'
+export type RoleCode = 'USER' | 'TRAINER' | 'FACILITY_OWNER' | 'STAFF' | 'ADMIN'
 
-export type UserRole = Exclude<RoleCode, 'ADMIN'>
+export type UserRole = Exclude<RoleCode, 'ADMIN' | 'STAFF'>
 
 export interface LoginRequest {
   email: string
@@ -39,10 +39,26 @@ export interface VerifyEmailRequest {
   code: string
 }
 
+export interface ResetPasswordRequest {
+  email: string
+  code: string
+  newPassword: string
+  confirmPassword: string
+}
+
+export interface ChangePasswordRequest {
+  currentPassword: string
+  newPassword: string
+  confirmPassword: string
+}
+
 export interface AuthApi {
   login(payload: LoginRequest): Promise<AuthResponse>
   register(payload: RegisterRequest): Promise<RegisterResponse>
   verifyEmail(payload: VerifyEmailRequest): Promise<void>
   resendVerificationCode(email: string): Promise<void>
+  forgotPassword(email: string): Promise<void>
+  resetPassword(payload: ResetPasswordRequest): Promise<void>
+  changePassword(payload: ChangePasswordRequest): Promise<void>
   logout(): Promise<void>
 }

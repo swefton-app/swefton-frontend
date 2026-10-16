@@ -28,8 +28,7 @@ input { -webkit-tap-highlight-color: transparent; }
 }
 
 button:focus-visible,
-input:focus-visible,
-label:has(input:focus-visible) {
+input:focus-visible {
   outline: 2px solid #58c9ff;
   outline-offset: 3px;
 }

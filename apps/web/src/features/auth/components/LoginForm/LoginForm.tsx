@@ -11,8 +11,9 @@ interface LoginFormProps {
   error: string
   notice: string
   pending: boolean
-  onGoogleAuthenticated: (response: AuthResponse) => void
+  onGoogleAuthenticated: (response: AuthResponse) => void | Promise<void>
   onSubmit: (payload: LoginRequest, keepSignedIn: boolean) => Promise<void>
+  onForgotPassword: (email: string) => void
 }
 
 export function LoginForm({
@@ -21,6 +22,7 @@ export function LoginForm({
   pending,
   onGoogleAuthenticated,
   onSubmit,
+  onForgotPassword,
 }: LoginFormProps) {
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
@@ -79,9 +81,13 @@ export function LoginForm({
           />
           <span>Keep me signed in</span>
         </label>
-        <span className={authStyles.mutedAction} title="Password recovery is coming soon">
+        <button
+          className={authStyles.mutedAction}
+          type="button"
+          onClick={() => onForgotPassword(email.trim())}
+        >
           Forgot password?
-        </span>
+        </button>
       </div>
 
       <button className={authStyles.primaryButton} type="submit" disabled={pending}>

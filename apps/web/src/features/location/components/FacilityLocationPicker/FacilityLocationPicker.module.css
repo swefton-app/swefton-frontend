@@ -1,0 +1,73 @@
+.picker { display: grid; gap: 7px; }
+.openButton { width: 100%; min-height: 68px; display: grid; grid-template-columns: auto minmax(0, 1fr) auto; align-items: center; gap: 12px; padding: 12px 14px; text-align: left; border: 1px solid; border-radius: 12px; cursor: pointer; }
+.openButton > svg { width: 20px; }
+.openButton > span { min-width: 0; display: grid; gap: 4px; }
+.openButton strong { font-size: 10px; }
+.openButton small { overflow: hidden; font-size: 8px; line-height: 1.45; text-overflow: ellipsis; white-space: nowrap; }
+.openButton .check { width: 18px; color: #6f9e25; }
+.openButton:disabled { opacity: .62; cursor: wait; }
+.light .openButton { color: #334039; border-color: #c9d3c2; background: #f2f6eb; }
+.light .openButton:hover { border-color: #8eae59; background: #f6faef; }
+.light .openButton > svg { color: #719a34; }
+.light .openButton small { color: #778179; }
+.dark .openButton { color: #dce6ef; border-color: #344456; background: #0a1018; }
+.dark .openButton:hover { border-color: #3f9db8; background: #0c141e; }
+.dark .openButton > svg { color: #43bedf; }
+.dark .openButton small { color: #748398; }
+.fieldError { color: #b34343; font-size: 8px; }
+.dark .fieldError { color: #ff8994; }
+.coordinates { color: #7c887f; font-size: 8px; font-variant-numeric: tabular-nums; }
+.dark .coordinates { color: #67778c; }
+.backdrop { position: fixed; z-index: 10000; inset: 0; display: grid; place-items: center; padding: 20px; background: rgba(7, 12, 9, .74); backdrop-filter: blur(8px); }
+.dialog { width: min(920px, 100%); max-height: calc(100vh - 40px); display: grid; grid-auto-rows: auto; overflow: auto; border: 1px solid #d8ded4; border-radius: 22px; background: #fafbf8; box-shadow: 0 28px 90px rgba(0, 0, 0, .38); }
+.dialogHeader { display: flex; justify-content: space-between; gap: 20px; padding: 22px 24px 15px; }
+.dialogHeader > div { display: grid; gap: 4px; }
+.dialogHeader span { color: #719531; font-size: 8px; font-weight: 900; letter-spacing: .13em; text-transform: uppercase; }
+.dialogHeader h2 { margin: 0; color: #202c24; font-size: 23px; letter-spacing: -.035em; }
+.dialogHeader p { margin: 0; color: #778179; font-size: 9px; }
+.dialogHeader > button { width: 34px; height: 34px; display: grid; flex: 0 0 auto; place-items: center; color: #667068; border: 1px solid #d8ddd5; border-radius: 10px; background: white; cursor: pointer; }
+.dialogHeader > button svg { width: 16px; }
+.searchForm { position: relative; display: grid; grid-template-columns: auto minmax(0, 1fr) auto; align-items: center; gap: 9px; margin: 0 24px 14px; padding: 5px 5px 5px 13px; border: 1px solid #cfd7ca; border-radius: 12px; background: white; }
+.searchForm:focus-within { border-color: #8eae59; box-shadow: 0 0 0 3px rgba(153, 209, 47, .12); }
+.searchForm > svg { width: 17px; color: #78847b; }
+.searchForm input { min-width: 0; height: 38px; padding: 0; color: #26312a; border: 0; outline: 0; background: transparent; font: inherit; font-size: 11px; }
+.searchForm button { min-width: 78px; height: 36px; display: grid; place-items: center; color: #17201b; border-radius: 9px; background: #b9f34b; cursor: pointer; font-size: 10px; font-weight: 850; }
+.searchForm button:disabled { opacity: .6; cursor: wait; }
+.searchForm button svg { width: 15px; }
+.results { z-index: 2; display: grid; gap: 1px; max-height: 185px; overflow-y: auto; margin: -7px 24px 14px; border: 1px solid #d9dfd5; border-radius: 12px; background: #d9dfd5; }
+.results button { display: grid; grid-template-columns: auto 1fr; align-items: center; gap: 9px; padding: 10px 12px; color: #3c4840; text-align: left; background: white; cursor: pointer; font-size: 9px; line-height: 1.45; }
+.results button:hover { background: #f1f6e9; }
+.results svg { width: 14px; color: #789d3a; }
+.mapWrap { position: relative; min-height: 330px; margin: 0 24px; overflow: hidden; border: 1px solid #ced5ca; border-radius: 15px; background: #e6ebe2; }
+.map { position: absolute; inset: 0; }
+.locateButton { position: absolute; z-index: 500; top: 12px; right: 12px; height: 38px; display: flex; align-items: center; gap: 7px; padding: 0 12px; color: #344139; border: 1px solid #cdd5c8; border-radius: 10px; background: rgba(255, 255, 255, .94); box-shadow: 0 3px 15px rgba(29, 43, 33, .16); cursor: pointer; font-size: 9px; font-weight: 800; }
+.locateButton svg { width: 15px; color: #6d972d; }
+.locateButton:disabled { opacity: .65; cursor: wait; }
+.marker { background: transparent; border: 0; }
+.marker span { position: relative; width: 30px; height: 30px; display: block; border: 4px solid white; border-radius: 50% 50% 50% 0; background: #79a92f; box-shadow: 0 4px 12px rgba(19, 35, 24, .35); transform: rotate(-45deg); }
+.marker span::after { position: absolute; inset: 7px; border-radius: 50%; background: white; content: ''; }
+.selection { display: flex; align-items: flex-start; justify-content: space-between; gap: 16px; min-height: 65px; margin: 14px 24px 0; padding: 12px 14px; border: 1px solid #dce1d9; border-radius: 12px; background: #f1f4ed; }
+.selection > div { min-width: 0; display: grid; gap: 5px; }
+.selection span { display: flex; align-items: center; gap: 6px; color: #7b857d; font-size: 8px; }
+.selection span svg { width: 12px; }
+.selection strong { color: #354139; font-size: 10px; line-height: 1.45; }
+.selection > small { flex: 0 0 auto; color: #788279; font-size: 8px; font-variant-numeric: tabular-nums; }
+.dialogActions { display: flex; justify-content: flex-end; gap: 10px; padding: 16px 24px 22px; }
+.dialogActions button { min-height: 42px; display: flex; align-items: center; gap: 7px; padding: 0 17px; border-radius: 10px; cursor: pointer; font-size: 10px; font-weight: 850; }
+.dialogActions button:first-child { color: #626e65; border: 1px solid #d3d9d0; background: white; }
+.dialogActions button:last-child { color: #17201b; background: #b9f34b; }
+.dialogActions button:disabled { opacity: .5; cursor: not-allowed; }
+.dialogActions svg { width: 14px; }
+.spin { animation: spin .8s linear infinite; }
+@keyframes spin { to { transform: rotate(360deg); } }
+@media (max-width: 600px) {
+  .backdrop { padding: 0; place-items: stretch; }
+  .dialog { width: 100%; max-height: 100vh; border: 0; border-radius: 0; }
+  .dialogHeader { padding: 17px 16px 13px; }
+  .dialogHeader h2 { font-size: 20px; }
+  .searchForm { margin: 0 16px 12px; }
+  .results { margin: -5px 16px 12px; }
+  .mapWrap { min-height: 310px; margin: 0 16px; }
+  .selection { display: grid; margin: 12px 16px 0; }
+  .dialogActions { padding: 14px 16px 18px; }
+}

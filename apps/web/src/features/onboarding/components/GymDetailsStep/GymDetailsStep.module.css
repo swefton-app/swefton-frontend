@@ -1,0 +1,30 @@
+.toggle { min-height: 70px; display: flex; align-items: center; gap: 12px; padding: 12px 14px; border: 1px solid #252d3a; border-radius: 12px; background: #0b0f16; cursor: pointer; }
+.toggle input { width: 17px; height: 17px; accent-color: #2abfe4; }
+.toggle span { display: grid; gap: 4px; }
+.toggle strong { color: #dce4ee; font-size: 10px; }
+.toggle small { color: #657184; font-size: 8px; }
+.mediaSection { display: grid; gap: 12px; padding-top: 4px; }
+.mediaSection > header { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+.mediaSection > header span { color: #aab4c4; font-size: 10px; font-weight: 750; }
+.mediaSection > header small { color: #596577; font-size: 8px; }
+.mediaGrid { display: grid; grid-template-columns: 1fr 2fr; gap: 12px; }
+.imagePicker { position: relative; min-height: 125px; display: grid; place-items: center; overflow: hidden; color: #536174; border: 1px dashed #344052; border-radius: 15px; background: #090d13; }
+.imagePicker > svg { width: 25px; }
+.imagePicker img { position: absolute; width: 100%; height: 100%; object-fit: cover; }
+.imagePicker > label { position: absolute; z-index: 1; inset: 0; display: grid; place-items: end center; padding: 12px; cursor: pointer; background: linear-gradient(transparent 45%, rgba(2, 5, 9, .83)); }
+.imagePicker > label span { padding: 6px 9px; color: #e1e8f1; border-radius: 8px; background: rgba(12, 18, 27, .82); font-size: 8px; font-weight: 800; }
+.imagePicker input, .galleryPicker input { position: absolute; width: 1px; height: 1px; opacity: 0; pointer-events: none; }
+.imagePicker > button { position: absolute; z-index: 2; top: 8px; right: 8px; width: 25px; height: 25px; display: grid; place-items: center; color: white; border-radius: 8px; background: rgba(5, 8, 13, .78); cursor: pointer; }
+.imagePicker > button svg { width: 13px; }
+.galleryPicker { display: grid; grid-template-columns: auto 1fr auto; align-items: center; gap: 12px; padding: 14px; border: 1px dashed #344052; border-radius: 14px; background: #090d13; cursor: pointer; }
+.galleryPicker > svg { width: 21px; color: #4bc7e8; }
+.galleryPicker > span:not(.choose) { display: grid; gap: 3px; }
+.galleryPicker strong { color: #dce5ef; font-size: 10px; }
+.galleryPicker small { color: #647184; font-size: 8px; }
+.choose { color: #75d7ee; font-size: 8px; font-weight: 800; }
+.galleryList { display: flex; flex-wrap: wrap; gap: 7px; }
+.galleryList > span { display: flex; align-items: center; gap: 6px; max-width: 100%; padding: 6px 8px; color: #8190a4; border-radius: 8px; background: rgba(255,255,255,.035); font-size: 8px; }
+.galleryList button { display: grid; place-items: center; color: #697789; background: transparent; cursor: pointer; }
+.galleryList button:hover { color: #ff8994; }
+.galleryList svg { width: 11px; }
+@media (max-width: 560px) { .mediaGrid { grid-template-columns: 1fr; } .imagePicker { min-height: 145px; } }
