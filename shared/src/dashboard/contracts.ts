@@ -27,6 +27,8 @@ export interface DashboardPreferences {
 export interface DashboardAddress {
   city: string;
   country: string;
+  latitude?: number;
+  longitude?: number;
 }
 
 export interface DashboardImage {

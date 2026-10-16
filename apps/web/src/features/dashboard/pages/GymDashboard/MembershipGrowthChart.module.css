@@ -1,0 +1,183 @@
+.lineLegend {
+  display: flex;
+  align-items: center;
+  gap: 22px;
+  padding-top: 7px;
+}
+
+.lineLegend span {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: #59645c;
+  font-size: 10px;
+  font-weight: 900;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+}
+
+.lineLegend i {
+  position: relative;
+  display: block;
+  width: 30px;
+  height: 3px;
+  border-radius: 999px;
+}
+
+.lineLegend i::after {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 8px;
+  height: 8px;
+  border: 2px solid currentColor;
+  border-radius: 50%;
+  background: #fff;
+  content: '';
+  transform: translate(-50%,-50%);
+}
+
+.lineLegend i[data-series='active'] {
+  background: #15bcd1;
+  color: #15bcd1;
+}
+
+.lineLegend i[data-series='new'] {
+  background: #7acb20;
+  color: #7acb20;
+}
+
+.chartScroller {
+  margin-top: 16px;
+}
+
+.chart {
+  min-width: 700px;
+}
+
+.grid line {
+  stroke: #e2e7e2;
+  stroke-width: 1;
+  stroke-dasharray: 3 6;
+}
+
+.grid text {
+  fill: #758078;
+  font-size: 10px;
+  text-anchor: end;
+}
+
+.axes line {
+  stroke: #b4bdb6;
+  stroke-width: 1;
+}
+
+.axes text {
+  fill: #5f6962;
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: .08em;
+  text-anchor: middle;
+  text-transform: uppercase;
+}
+
+.activeLine,
+.newLine {
+  fill: none;
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.activeArea {
+  fill: url(#activeMemberArea);
+  pointer-events: none;
+}
+
+.activeLine {
+  stroke: #15bcd1;
+}
+
+.newLine {
+  stroke: #7acb20;
+}
+
+.activeDot,
+.newDot {
+  fill: #fff;
+  stroke-width: 1.75;
+  transition: r .15s, stroke-width .15s;
+}
+
+.activeDot {
+  stroke: #15bcd1;
+}
+
+.newDot {
+  stroke: #7acb20;
+}
+
+.highlightedDot {
+  r: 4.5px;
+  stroke-width: 2.5px;
+}
+
+.xLabels line {
+  stroke: #606a63;
+  stroke-width: 1;
+}
+
+.xLabels text {
+  fill: #657068;
+  font-size: 10px;
+  text-anchor: middle;
+}
+
+.hitAreas rect {
+  fill: transparent;
+  outline: none;
+  cursor: crosshair;
+}
+
+.hoverGuide {
+  stroke: #aeb8b0;
+  stroke-width: 1;
+  stroke-dasharray: 3 4;
+}
+
+.tooltip > rect {
+  fill: rgb(24 32 27 / 95%);
+  filter: drop-shadow(0 8px 18px rgb(23 32 26 / 18%));
+}
+
+.tooltip text {
+  fill: #dce4de;
+  font-size: 10px;
+}
+
+.tooltip .tooltipDate {
+  fill: #fff;
+  font-size: 11px;
+  font-weight: 900;
+}
+
+.tooltip .tooltipNumber {
+  fill: #fff;
+  font-weight: 900;
+  text-anchor: end;
+}
+
+.tooltipActive {
+  fill: #15bcd1;
+}
+
+.tooltipNew {
+  fill: #7acb20;
+}
+
+@media (max-width: 680px) {
+  .lineLegend {
+    width: 100%;
+    justify-content: flex-start;
+  }
+}

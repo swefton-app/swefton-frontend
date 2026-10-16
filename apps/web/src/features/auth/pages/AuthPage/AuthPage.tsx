@@ -6,6 +6,7 @@ import { BrandPanel } from "../../components/BrandPanel";
 import { LoginForm } from "../../components/LoginForm";
 import { RegisterForm } from "../../components/RegisterForm";
 import { VerifyEmailForm } from "../../components/VerifyEmailForm";
+import { ForgotPasswordForm } from "../../components/ForgotPasswordForm";
 import { useAuthFlow } from "../../hooks/useAuthFlow";
 import styles from "./AuthPage.module.css";
 
@@ -13,6 +14,7 @@ const viewClassNames: Record<AuthView, string> = {
   login: styles.loginView,
   register: styles.registerView,
   verify: styles.verifyView,
+  forgot: styles.verifyView,
   authenticated: styles.authenticatedView,
 };
 
@@ -56,6 +58,7 @@ export function AuthPage() {
                 pending={auth.pending}
                 onGoogleAuthenticated={auth.completeLogin}
                 onSubmit={auth.login}
+                onForgotPassword={auth.openForgotPassword}
               />
             )}
             {visibleView === "register" && (
@@ -65,6 +68,18 @@ export function AuthPage() {
                 pending={auth.pending}
                 onGoogleAuthenticated={auth.completeRegistration}
                 onSubmit={auth.register}
+              />
+            )}
+            {visibleView === "forgot" && (
+              <ForgotPasswordForm
+                email={auth.resetEmail}
+                error={auth.error}
+                notice={auth.notice}
+                pending={auth.pending}
+                codeSent={auth.resetCodeSent}
+                onBack={() => auth.selectView("login")}
+                onRequestCode={auth.requestPasswordReset}
+                onReset={auth.resetPassword}
               />
             )}
             {visibleView === "authenticated" && (

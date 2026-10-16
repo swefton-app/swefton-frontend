@@ -1,9 +1,11 @@
 import { useState } from "react";
+import axios from "axios";
 import type {
   AuthResponse,
   LoginRequest,
   RegisterRequest,
   VerifyEmailRequest,
+  ResetPasswordRequest,
 } from "@swefton/shared/auth";
 import { getApiErrorMessage } from "../../../core/http/getApiErrorMessage";
 import { activeBusinessStorage } from "../../../core/storage/activeBusinessStorage";
@@ -12,7 +14,7 @@ import { tokenStorage } from "../../../core/storage/tokenStorage";
 import { authApi } from "../api/authApi";
 import { getPostAuthRoute, getPostLoginRoute } from "../utils/getPostAuthRoute";
 
-export type AuthView = "login" | "register" | "verify" | "authenticated";
+export type AuthView = "login" | "register" | "verify" | "forgot" | "authenticated";
 
 export function useAuthFlow() {
   const [view, setView] = useState<AuthView>(() =>
@@ -22,6 +24,8 @@ export function useAuthFlow() {
   const [error, setError] = useState("");
   const [notice, setNotice] = useState("");
   const [verificationEmail, setVerificationEmail] = useState("");
+  const [resetEmail, setResetEmail] = useState("");
+  const [resetCodeSent, setResetCodeSent] = useState(false);
   const [pendingRegistration, setPendingRegistration] =
     useState<LoginRequest | null>(null);
 
@@ -149,6 +153,42 @@ export function useAuthFlow() {
     }
   };
 
+  const requestPasswordReset = async (email: string) => {
+    setPending(true); setError("");
+    try {
+      await authApi.forgotPassword(email);
+      setResetEmail(email.trim()); setResetCodeSent(true);
+      setNotice("If this email has a password account, check your inbox and spam folder for a six-digit code.");
+      return true;
+    } catch (requestError) {
+      setError(
+        axios.isAxiosError(requestError) && requestError.response?.status === 503
+          ? "Email service is unavailable. Please try again later."
+          : getApiErrorMessage(requestError, "We could not send the reset code."),
+      );
+      return false;
+    } finally { setPending(false); }
+  };
+
+  const openForgotPassword = (email: string) => {
+    setError("");
+    setNotice("");
+    setResetEmail(email.trim());
+    setResetCodeSent(false);
+    setView("forgot");
+  };
+
+  const resetPassword = async (payload: ResetPasswordRequest) => {
+    if (payload.newPassword !== payload.confirmPassword) { setError("Passwords do not match."); return; }
+    setPending(true); setError("");
+    try {
+      await authApi.resetPassword(payload);
+      setResetCodeSent(false); setNotice("Password reset. You can now sign in."); setView("login");
+    } catch (requestError) {
+      setError(getApiErrorMessage(requestError, "The code is invalid or expired."));
+    } finally { setPending(false); }
+  };
+
   const logout = async () => {
     setPending(true);
     try {
@@ -173,9 +213,14 @@ export function useAuthFlow() {
     login,
     logout,
     notice,
+    openForgotPassword,
     pending,
     register,
     resendCode,
+    requestPasswordReset,
+    resetPassword,
+    resetEmail,
+    resetCodeSent,
     selectView,
     verificationEmail,
     verifyEmail,

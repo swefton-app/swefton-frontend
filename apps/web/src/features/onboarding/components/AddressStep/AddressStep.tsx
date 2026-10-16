@@ -3,6 +3,7 @@ import type {
   UserAddressInput,
 } from '@swefton/shared/onboarding'
 import { LocateFixed, MapPin } from 'lucide-react'
+import { FacilityLocationPicker, type LocationFields } from '../../../location/components/FacilityLocationPicker/FacilityLocationPicker'
 import formStyles from '../OnboardingForm.module.css'
 import styles from './AddressStep.module.css'
 
@@ -16,7 +17,17 @@ export function AddressStep({ value, errors, onChange }: AddressStepProps) {
   const update = <Key extends keyof UserAddressInput>(
     key: Key,
     nextValue: UserAddressInput[Key],
-  ) => onChange({ ...value, [key]: nextValue })
+  ) => onChange({ ...value, [key]: nextValue, latitude: undefined, longitude: undefined })
+
+  const updateFromMap = (location: LocationFields) => onChange({
+    addressLine: location.addressLine,
+    city: location.city,
+    state: location.state,
+    postalCode: location.postalCode,
+    country: location.country,
+    latitude: location.latitude,
+    longitude: location.longitude,
+  })
 
   return (
     <div className={formStyles.stepContent}>
@@ -27,6 +38,14 @@ export function AddressStep({ value, errors, onChange }: AddressStepProps) {
           <p>Only your city is shown publicly. Your full address helps us personalize nearby results.</p>
         </div>
       </div>
+
+      <FacilityLocationPicker
+        kind="home"
+        tone="dark"
+        value={value}
+        onChange={updateFromMap}
+        error={errors.latitude ?? errors.longitude}
+      />
 
       <label className={formStyles.field}>
         <span>Street address <b>*</b></span>

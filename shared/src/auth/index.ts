@@ -8,6 +8,8 @@ export type {
   TokenResponse,
   UserRole,
   VerifyEmailRequest,
+  ResetPasswordRequest,
+  ChangePasswordRequest,
 } from './contracts'
 export { authEndpoints, publicAuthEndpoints } from './endpoints'
 export { getPostAuthDestination } from './postAuth'

@@ -13,6 +13,8 @@
     "./onboarding": "./src/onboarding/index.ts",
     "./dashboard": "./src/dashboard/index.ts",
     "./machine": "./src/machine/index.ts",
-    "./staff": "./src/staff/index.ts"
+    "./membership": "./src/membership/index.ts",
+    "./staff": "./src/staff/index.ts",
+    "./trainer": "./src/trainer/index.ts"
   }
 }

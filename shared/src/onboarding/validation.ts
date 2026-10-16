@@ -35,6 +35,13 @@ export function validateAddress(
   if (!address.addressLine.trim()) errors.addressLine = 'Street address is required.'
   if (!address.city.trim()) errors.city = 'City is required.'
   if (!address.country.trim()) errors.country = 'Country is required.'
+  if (address.latitude === undefined || address.longitude === undefined) {
+    errors.latitude = 'Choose your registered location on the map.'
+    errors.longitude = 'Choose your registered location on the map.'
+  } else if (address.latitude < -90 || address.latitude > 90 || address.longitude < -180 || address.longitude > 180) {
+    errors.latitude = 'Choose a valid map location.'
+    errors.longitude = 'Choose a valid map location.'
+  }
 
   return errors
 }

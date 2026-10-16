@@ -84,6 +84,17 @@
   cursor: default;
 }
 
+button.mutedAction {
+  padding: 0;
+  color: #8194af;
+  border: 0;
+  background: transparent;
+  cursor: pointer;
+}
+
+button.mutedAction:hover:not(:disabled) { color: var(--color-brand-cyan); }
+button.mutedAction:disabled { opacity: .65; cursor: default; }
+
 .primaryButton {
   position: relative;
   height: 52px;

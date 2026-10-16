@@ -139,6 +139,10 @@ export interface GymResponse extends CreateFacilityRequest {
   facilityId: number
   ownerId: number
   status: string
+  weekdayOpenTime: string | null
+  weekdayCloseTime: string | null
+  weekendOpenTime: string | null
+  weekendCloseTime: string | null
   logoImage: ImageResponse | null
   coverImage: ImageResponse | null
   galleryImages: ImageResponse[]

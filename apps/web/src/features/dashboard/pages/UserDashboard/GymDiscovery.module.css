@@ -1,0 +1,1239 @@
+.directory,
+.profilePage {
+  width: min(1180px, 100%);
+  margin: 0 auto;
+}
+.eyebrow {
+  display: block;
+  color: var(--color-brand-cyan);
+  font-size: 0.72rem;
+  font-weight: 850;
+  letter-spacing: 0.13em;
+  text-transform: uppercase;
+}
+.backButton {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  margin-bottom: 24px;
+  color: var(--color-text-secondary);
+  background: transparent;
+  cursor: pointer;
+  font-size: 0.82rem;
+  font-weight: 750;
+}
+.backButton:hover {
+  color: var(--color-brand-cyan);
+}
+.backButton svg {
+  width: 16px;
+}
+.directoryHeader {
+  display: flex;
+  align-items: end;
+  justify-content: space-between;
+  gap: 28px;
+}
+.directoryHeader h1,
+.profilePage h1 {
+  margin: 8px 0 0;
+  color: var(--color-text-primary);
+  font-size: clamp(2rem, 4vw, 3.5rem);
+  line-height: 1;
+  letter-spacing: -0.055em;
+}
+.directoryHeader p {
+  max-width: 560px;
+  margin: 12px 0 0;
+  color: var(--color-text-muted);
+  font-size: 0.95rem;
+  line-height: 1.6;
+}
+.locationButton,
+.mapButton,
+.primaryButton {
+  min-height: 46px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 9px;
+  padding: 0 16px;
+  color: var(--color-background-primary);
+  border-radius: 11px;
+  background: var(--color-brand-cyan);
+  cursor: pointer;
+  font-size: 0.8rem;
+  font-weight: 850;
+}
+.mapButton {
+  color: var(--color-text-primary);
+  border: 1px solid var(--color-border);
+  background: var(--color-surface);
+}
+.mapButton:disabled { opacity: .45; cursor: not-allowed; }
+.mapButton svg { width: 17px; }
+.mapBackdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 1200;
+  display: grid;
+  place-items: center;
+  padding: 20px;
+  background: rgba(3, 8, 18, .82);
+  backdrop-filter: blur(9px);
+}
+.mapDialog {
+  width: min(1080px, 100%);
+  height: min(760px, calc(100vh - 40px));
+  display: grid;
+  grid-template-rows: auto 1fr;
+  overflow: hidden;
+  color: var(--color-text-primary);
+  border: 1px solid var(--color-border);
+  border-radius: 22px;
+  background: var(--color-surface);
+  box-shadow: 0 30px 90px rgba(0,0,0,.5);
+}
+.mapDialog > header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+  padding: 20px 22px;
+}
+.mapDialog h2 { margin: 5px 0 0; font-size: 1.35rem; }
+.mapDialog p { margin: 5px 0 0; color: var(--color-text-muted); font-size: .75rem; }
+.mapDialog > header > button {
+  width: 38px;
+  height: 38px;
+  display: grid;
+  flex: 0 0 auto;
+  place-items: center;
+  color: var(--color-text-secondary);
+  border: 1px solid var(--color-border);
+  border-radius: 10px;
+  background: var(--color-background-secondary);
+  cursor: pointer;
+}
+.mapDialog > header > button svg { width: 17px; }
+.gymMap { min-height: 420px; width: 100%; background: #d7ded7; }
+.gymMapMarkerHost { background: transparent; border: 0; }
+.gymMapMarker {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  width: max-content;
+  max-width: 145px;
+  padding: 4px 9px 4px 4px;
+  color: #101810;
+  border: 2px solid #fff;
+  border-radius: 999px;
+  background: #b7f43d;
+  box-shadow: 0 8px 24px rgba(0,0,0,.3);
+}
+.gymMapMarker img,
+.gymMapMarker span {
+  width: 32px;
+  height: 32px;
+  display: grid;
+  flex: 0 0 auto;
+  place-items: center;
+  object-fit: cover;
+  border-radius: 50%;
+  background: #111815;
+  color: #b7f43d;
+  font-size: .82rem;
+  font-weight: 900;
+}
+.gymMapMarker strong {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: .66rem;
+  font-weight: 900;
+}
+.locationButton:disabled,
+.primaryButton:disabled {
+  opacity: 0.65;
+  cursor: wait;
+}
+.locationButton svg,
+.primaryButton svg {
+  width: 17px;
+}
+.searchBar {
+  height: 58px;
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  align-items: center;
+  gap: 11px;
+  margin-top: 30px;
+  padding: 6px 7px 6px 18px;
+  border: 1px solid var(--color-border);
+  border-radius: 15px;
+  background: var(--color-surface);
+}
+.searchBar > svg {
+  width: 19px;
+  color: var(--color-text-muted);
+}
+.searchBar input {
+  width: 100%;
+  color: var(--color-text-primary);
+  outline: 0;
+  background: transparent;
+  font-size: 1rem;
+}
+.searchBar button {
+  height: 44px;
+  padding: 0 22px;
+  color: var(--color-background-primary);
+  border-radius: 10px;
+  background: var(--color-brand-cyan);
+  cursor: pointer;
+  font-size: 0.8rem;
+  font-weight: 850;
+}
+.gymGrid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 14px;
+  margin-top: 20px;
+}
+.gymCard {
+  min-height: 132px;
+  display: grid;
+  grid-template-columns: 76px 1fr;
+  align-items: center;
+  gap: 17px;
+  padding: 20px;
+  color: var(--color-text-primary);
+  border: 1px solid var(--color-border-subtle);
+  border-radius: 17px;
+  background: var(--color-surface);
+  cursor: pointer;
+  text-align: left;
+  transition:
+    transform 0.2s ease,
+    border-color 0.2s ease;
+}
+.gymCard:hover {
+  transform: translateY(-2px);
+  border-color: color-mix(
+    in srgb,
+    var(--color-brand-cyan) 55%,
+    var(--color-border)
+  );
+}
+.logo {
+  width: 76px;
+  height: 76px;
+  display: grid;
+  flex: 0 0 auto;
+  place-items: center;
+  overflow: hidden;
+  color: var(--color-brand-cyan);
+  border: 1px solid var(--color-border);
+  border-radius: 18px;
+  background: var(--color-surface-elevated);
+}
+.logo img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.logo svg {
+  width: 28px;
+}
+.gymInfo {
+  min-width: 0;
+}
+.gymInfo h2 {
+  margin: 0;
+  font-size: 1.15rem;
+}
+.gymInfo p {
+  display: flex;
+  align-items: flex-start;
+  gap: 6px;
+  overflow: hidden;
+  margin: 8px 0 0;
+  color: var(--color-text-muted);
+  font-size: 0.78rem;
+  line-height: 1.4;
+}
+.gymInfo p svg {
+  width: 13px;
+  flex: 0 0 auto;
+}
+.gymInfo > div {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  margin-top: 13px;
+}
+.gymInfo > div span {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 5px 8px;
+  color: var(--color-text-secondary);
+  border-radius: 999px;
+  background: var(--color-background-secondary);
+  font-size: 0.68rem;
+  font-weight: 750;
+}
+.gymInfo > div svg {
+  width: 12px;
+}
+.loading,
+.emptyState {
+  min-height: 300px;
+  display: grid;
+  place-items: center;
+  align-content: center;
+  gap: 10px;
+  color: var(--color-text-muted);
+  text-align: center;
+}
+.loading svg,
+.emptyState > svg {
+  width: 34px;
+  color: var(--color-brand-cyan);
+}
+.emptyState h2 {
+  margin: 5px 0 0;
+  color: var(--color-text-primary);
+  font-size: 1.25rem;
+}
+.emptyState p {
+  margin: 0;
+  font-size: 0.85rem;
+}
+.error {
+  margin: 14px 0 0;
+  padding: 12px 14px;
+  color: #ffb9b3;
+  border: 1px solid rgba(255, 109, 98, 0.3);
+  border-radius: 10px;
+  background: rgba(255, 109, 98, 0.09);
+  font-size: 0.8rem;
+}
+.locationGate {
+  width: min(720px, 100%);
+  min-height: 580px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto;
+  text-align: center;
+}
+.locationGate .backButton {
+  align-self: flex-start;
+}
+.locationIcon {
+  width: 72px;
+  height: 72px;
+  display: grid;
+  place-items: center;
+  margin-bottom: 22px;
+  color: var(--color-brand-cyan);
+  border: 1px solid var(--color-border);
+  border-radius: 22px;
+  background: var(--color-surface);
+}
+.locationIcon svg {
+  width: 31px;
+}
+.locationGate h1 {
+  max-width: 650px;
+  margin: 10px 0 0;
+  font-size: clamp(2.2rem, 5vw, 4.2rem);
+  line-height: 1;
+  letter-spacing: -0.06em;
+}
+.locationGate > p:not(.error) {
+  max-width: 530px;
+  margin: 18px 0 25px;
+  color: var(--color-text-muted);
+  font-size: 1rem;
+  line-height: 1.65;
+}
+.profileHero {
+  min-height: 245px;
+  display: flex;
+  align-items: end;
+  justify-content: space-between;
+  gap: 30px;
+  padding: 30px;
+  color: white;
+  border: 1px solid var(--color-border);
+  border-radius: 22px;
+  background:
+    radial-gradient(
+      circle at 80% 15%,
+      color-mix(in srgb, var(--color-brand-cyan) 17%, transparent),
+      transparent 38%
+    ),
+    #111815;
+  background-position: center;
+  background-size: cover;
+}
+.profileIdentity {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+.profileIdentity .logo {
+  width: 90px;
+  height: 90px;
+  background: rgba(255, 255, 255, 0.1);
+}
+.profileDistance {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--color-brand-cyan);
+  font-size: 0.75rem;
+  font-weight: 800;
+}
+.profileDistance svg {
+  width: 14px;
+}
+.profileIdentity h1 {
+  color: white;
+}
+.profileIdentity p {
+  margin: 9px 0 0;
+  color: #b9c2bd;
+  font-size: 0.82rem;
+}
+.memberCount {
+  min-width: 125px;
+  display: grid;
+  justify-items: center;
+  gap: 4px;
+  padding: 17px;
+  border: 1px solid rgba(255, 255, 255, 0.13);
+  border-radius: 16px;
+  background: rgba(255, 255, 255, 0.08);
+  backdrop-filter: blur(8px);
+}
+.memberCount svg {
+  width: 19px;
+  color: var(--color-brand-cyan);
+}
+.memberCount strong {
+  font-size: 1.55rem;
+}
+.memberCount span {
+  color: #bdc7c0;
+  font-size: 0.67rem;
+}
+.profileGrid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 16px;
+  margin-top: 16px;
+}
+.profileTabs { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-top: 18px; padding: 6px; border: 1px solid var(--color-border-subtle); border-radius: 14px; background: var(--color-surface); }
+.profileTabLinks { display: flex; gap: 8px; }
+.profileTabs button { min-height: 40px; padding: 9px 17px; color: var(--color-text-muted); border-radius: 10px; background: transparent; cursor: pointer; font-size: .76rem; font-weight: 800; }
+.profileTabs button:hover { color: var(--color-text-primary); background: var(--color-background-secondary); }
+.profileTabs .activeProfileTab { color: var(--color-background-primary); background: var(--color-brand-cyan); }
+.occupancyBadge { display: inline-flex; align-items: center; gap: 6px; padding: 8px 12px; color: var(--color-text-secondary); border-radius: 10px; background: var(--color-background-secondary); font-size: .7rem; white-space: nowrap; }
+.occupancyBadge > svg { width: 15px; color: var(--color-brand-cyan); }
+.occupancyBadge > strong { color: var(--color-text-primary); font-size: .82rem; }
+.occupancyBadge > span { color: var(--color-text-muted); }
+.postsGrid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; margin-top: 20px; }
+.postsGrid article { aspect-ratio: 1; overflow: hidden; border: 1px solid var(--color-border-subtle); border-radius: 14px; background: var(--color-background-secondary); }
+.postsGrid img { width: 100%; height: 100%; object-fit: cover; transition: transform .25s ease; }
+.postsGrid article:hover img { transform: scale(1.035); }
+.mainColumn {
+  display: grid;
+  align-content: start;
+  gap: 16px;
+}
+.panel,
+.membershipPanel {
+  padding: 24px;
+  border: 1px solid var(--color-border-subtle);
+  border-radius: 18px;
+  background: var(--color-surface);
+}
+.panel h2,
+.membershipPanel h2 {
+  margin: 7px 0 0;
+  font-size: 1.35rem;
+  letter-spacing: -0.03em;
+}
+.description,
+.membershipPanel > p {
+  margin: 11px 0 0;
+  color: var(--color-text-muted);
+  font-size: 0.82rem;
+  line-height: 1.65;
+}
+.hoursList {
+  display: grid;
+  gap: 8px;
+  margin-top: 20px;
+}
+.hoursList > div {
+  display: grid;
+  grid-template-columns: 28px 1fr auto;
+  align-items: center;
+  gap: 9px;
+  padding: 11px 12px;
+  border-radius: 10px;
+  background: var(--color-background-secondary);
+}
+.hoursList svg {
+  width: 15px;
+  color: var(--color-brand-cyan);
+}
+.hoursList span {
+  color: var(--color-text-secondary);
+  font-size: 0.77rem;
+}
+.hoursList strong {
+  font-size: 0.77rem;
+}
+.panelHeading {
+  display: flex;
+  align-items: end;
+  justify-content: space-between;
+  gap: 20px;
+}
+.panelHeading > span {
+  color: var(--color-text-muted);
+  font-size: 0.72rem;
+}
+.machineGrid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 8px;
+  margin-top: 20px;
+}
+.machineGrid article {
+  display: grid;
+  grid-template-columns: 36px 1fr auto;
+  align-items: center;
+  gap: 10px;
+  padding: 12px;
+  border: 1px solid var(--color-border-subtle);
+  border-radius: 11px;
+  background: var(--color-background-secondary);
+}
+.machineGrid > article > svg {
+  width: 17px;
+  color: var(--color-brand-purple);
+}
+.machineGrid div {
+  display: grid;
+  gap: 3px;
+}
+.machineGrid strong {
+  font-size: 0.76rem;
+}
+.machineGrid span {
+  color: var(--color-text-muted);
+  font-size: 0.65rem;
+}
+.machineGrid b {
+  color: var(--color-brand-cyan);
+  font-size: 0.85rem;
+}
+.emptyCopy {
+  margin: 18px 0 0;
+  color: var(--color-text-muted);
+  font-size: 0.8rem;
+}
+.membershipPanel {
+  align-self: start;
+  width: 100%;
+}
+.planList {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  align-items: start;
+  gap: 18px;
+  margin-top: 20px;
+}
+.planList article {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 10px;
+  padding: 14px;
+  border: 1px solid var(--color-border);
+  border-radius: 12px;
+  background: var(--color-background-secondary);
+}
+.planList article > div {
+  display: grid;
+  gap: 4px;
+}
+.planList strong {
+  font-size: 0.82rem;
+}
+.planList span {
+  color: var(--color-text-muted);
+  font-size: 0.67rem;
+}
+.planList b {
+  text-align: right;
+  font-size: 0.86rem;
+}
+.planList b small {
+  display: block;
+  margin-top: 3px;
+  color: var(--color-text-muted);
+  font-size: 0.58rem;
+  font-weight: 600;
+}
+.planList button {
+  grid-column: 1/-1;
+  min-height: 38px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  color: var(--color-background-primary);
+  border-radius: 9px;
+  background: var(--color-brand-cyan);
+  cursor: pointer;
+  font-size: 0.72rem;
+  font-weight: 850;
+}
+.planList button:disabled {
+  opacity: 0.6;
+  cursor: wait;
+}
+.planList button svg {
+  width: 14px;
+}
+.statusCard,
+.activeMembership {
+  display: grid;
+  justify-items: center;
+  margin-top: 18px;
+  padding: 24px 15px;
+  text-align: center;
+  border-radius: 14px;
+  background: var(--color-background-secondary);
+}
+.statusCard > svg {
+  width: 30px;
+  color: var(--color-brand-purple);
+}
+.statusCard p,
+.activeMembership p {
+  margin: 9px 0 0;
+  color: var(--color-text-muted);
+  font-size: 0.74rem;
+  line-height: 1.55;
+}
+.statusCard button {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  margin-top: 17px;
+  padding: 9px 13px;
+  color: var(--color-text-primary);
+  border: 1px solid var(--color-border);
+  border-radius: 9px;
+  background: var(--color-surface-elevated);
+  cursor: pointer;
+  font-size: 0.7rem;
+  font-weight: 800;
+}
+.statusCard button svg {
+  width: 14px;
+}
+.activeBadge {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  color: var(--color-brand-cyan);
+  font-size: 0.7rem;
+  font-weight: 850;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+.activeBadge svg {
+  width: 15px;
+}
+.usage {
+  display: grid;
+  justify-items: center;
+  margin-top: 20px;
+}
+.usage strong {
+  font-size: 3rem;
+  line-height: 1;
+  color: var(--color-text-primary);
+}
+.usage span {
+  margin-top: 6px;
+  color: var(--color-text-muted);
+  font-size: 0.72rem;
+}
+.qrButton {
+  width: 100%;
+  min-height: 45px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  margin-top: 20px;
+  color: var(--color-background-primary);
+  border-radius: 10px;
+  background: var(--color-brand-cyan);
+  cursor: pointer;
+  font-size: 0.76rem;
+  font-weight: 850;
+}
+.qrButton svg {
+  width: 17px;
+}
+.qrBackdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  display: grid;
+  place-items: center;
+  padding: 20px;
+  background: rgba(3, 8, 18, 0.8);
+  backdrop-filter: blur(9px);
+}
+.qrDialog {
+  position: relative;
+  width: min(430px, 100%);
+  display: grid;
+  justify-items: center;
+  padding: 30px;
+  color: var(--color-text-primary);
+  border: 1px solid var(--color-border);
+  border-radius: 22px;
+  background: var(--color-surface);
+  text-align: center;
+  box-shadow: 0 30px 90px rgba(0, 0, 0, 0.45);
+}
+.qrDialog h2 {
+  margin: 8px 0 18px;
+  font-size: 1.4rem;
+}
+.qrDialog img {
+  width: min(280px, 100%);
+  border-radius: 14px;
+}
+.qrDialog p {
+  margin: 17px 0 0;
+  color: var(--color-text-muted);
+  font-size: 0.75rem;
+  line-height: 1.5;
+}
+.qrDialog > strong {
+  margin-top: 8px;
+  color: var(--color-brand-cyan);
+  font-size: 0.72rem;
+}
+.qrClose {
+  position: absolute;
+  top: 14px;
+  right: 14px;
+  width: 35px;
+  height: 35px;
+  display: grid;
+  place-items: center;
+  color: var(--color-text-secondary);
+  border: 1px solid var(--color-border);
+  border-radius: 9px;
+  background: var(--color-surface-elevated);
+  cursor: pointer;
+}
+.qrClose svg {
+  width: 16px;
+}
+.spin {
+  animation: spin 0.85s linear infinite;
+}
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+.salePrice {
+  display: grid !important;
+  justify-items: end;
+  color: #ef5350 !important;
+}
+.salePrice del {
+  margin-bottom: 2px;
+  color: var(--color-text-muted);
+  font-size: 0.68rem;
+  font-weight: 600;
+}
+.checkoutDialog {
+  position: relative;
+  width: min(480px, 100%);
+  display: grid;
+  gap: 12px;
+  padding: 30px;
+  color: var(--color-text-primary);
+  border: 1px solid var(--color-border);
+  border-radius: 22px;
+  background: var(--color-surface);
+  box-shadow: 0 30px 90px rgba(0, 0, 0, 0.45);
+}
+.checkoutDialog h2 {
+  margin: 0;
+  font-size: 1.45rem;
+}
+.checkoutIcon {
+  width: 28px;
+  color: var(--color-brand-cyan);
+}
+.checkoutPrice {
+  display: flex;
+  align-items: baseline;
+  gap: 9px;
+  padding: 12px;
+  border-radius: 11px;
+  background: var(--color-background-secondary);
+}
+.checkoutPrice del {
+  color: var(--color-text-muted);
+  font-size: 0.75rem;
+}
+.checkoutPrice strong {
+  color: #ef5350;
+  font-size: 1.3rem;
+}
+.checkoutPrice span {
+  color: var(--color-text-muted);
+  font-size: 0.68rem;
+}
+.checkoutDialog > p {
+  margin: 0;
+  color: var(--color-text-muted);
+  font-size: 0.72rem;
+  line-height: 1.5;
+}
+.checkoutDialog label {
+  display: grid;
+  gap: 6px;
+  color: var(--color-text-secondary);
+  font-size: 0.68rem;
+  font-weight: 750;
+}
+.checkoutDialog input {
+  height: 43px;
+  padding: 0 12px;
+  color: var(--color-text-primary);
+  border: 1px solid var(--color-border);
+  border-radius: 9px;
+  outline: 0;
+  background: var(--color-background-secondary);
+}
+.checkoutDialog input:focus {
+  border-color: var(--color-brand-cyan);
+}
+.checkoutRow {
+  display: grid;
+  grid-template-columns: 1fr 1fr 0.8fr;
+  gap: 8px;
+}
+.payButton {
+  min-height: 46px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  color: var(--color-background-primary);
+  border-radius: 10px;
+  background: var(--color-brand-cyan);
+  cursor: pointer;
+  font-size: 0.76rem;
+  font-weight: 850;
+}
+.payButton:disabled {
+  opacity: 0.6;
+}
+.payButton svg {
+  width: 17px;
+}
+.discountBadge {
+  width: max-content;
+  padding: 4px 7px !important;
+  color: #ffaaa4 !important;
+  border: 1px solid rgba(255, 96, 84, 0.28);
+  border-radius: 999px;
+  background: rgba(255, 96, 84, 0.09);
+  font-size: 0.56rem !important;
+  font-weight: 900;
+  text-transform: uppercase;
+  letter-spacing: 0.07em;
+}
+.discountEnds {
+  grid-column: 1/-1;
+  color: #ffaaa4;
+  font-size: 0.6rem;
+}
+.planList article:has(.discountBadge) {
+  border-color: rgba(255, 96, 84, 0.35);
+  background: linear-gradient(
+    145deg,
+    rgba(255, 96, 84, 0.06),
+    var(--color-background-secondary)
+  );
+}
+.planDurationGroup {
+  display: grid;
+  gap: 8px;
+}
+.planDurationGroup > header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 4px 2px 1px;
+}
+.planDurationGroup > header strong {
+  color: #fff;
+  font-size: 1rem;
+  font-weight: 900;
+  text-transform: uppercase;
+  letter-spacing: 0.035em;
+  text-shadow: 0 4px 18px rgba(255,255,255,.12);
+}
+.planDurationGroup > header span {
+  color: var(--color-text-muted);
+  font-size: 0.6rem;
+}
+@media (max-width: 900px) {
+  .profileGrid {
+    grid-template-columns: 1fr;
+  }
+  .membershipPanel {
+    position: static;
+  }
+  .gymGrid {
+    grid-template-columns: 1fr;
+  }
+}
+@media (max-width: 650px) {
+  .directoryHeader,
+  .profileHero {
+    align-items: stretch;
+    flex-direction: column;
+  }
+  .directoryHeader .locationButton {
+    align-self: flex-start;
+  }
+  .gymCard {
+    grid-template-columns: 58px 1fr;
+    padding: 15px;
+  }
+  .logo {
+    width: 58px;
+    height: 58px;
+    border-radius: 14px;
+  }
+  .profileIdentity {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+  .memberCount {
+    grid-template-columns: auto auto 1fr;
+    justify-items: start;
+    align-items: center;
+  }
+  .machineGrid {
+    grid-template-columns: 1fr;
+  }
+  .planList { grid-template-columns: 1fr; }
+  .profileTabs { align-items: stretch; flex-direction: column; }
+  .profileTabLinks { overflow-x: auto; }
+  .profileTabs button { flex: 1 0 auto; }
+  .occupancyBadge { align-self: flex-start; }
+  .postsGrid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .searchBar {
+    grid-template-columns: auto 1fr;
+    padding-right: 12px;
+  }
+  .searchBar button {
+    grid-column: 1/-1;
+    width: 100%;
+    margin: 0 0 8px;
+  }
+  .searchBar {
+    height: auto;
+  }
+  .profileHero {
+    padding: 23px;
+  }
+  .panel,
+  .membershipPanel {
+    padding: 19px;
+  }
+}
+.qrIdentity {
+  display: grid;
+  justify-items: center;
+  gap: 6px;
+  margin-top: 14px;
+  padding: 12px 18px;
+  border-radius: 10px;
+  background: var(--color-background-secondary);
+  text-align: center;
+}
+.qrIdentity strong {
+  font-size: 0.75rem;
+}
+.qrIdentity strong:last-child {
+  color: var(--color-brand-cyan);
+}
+.locationActions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 9px;
+}
+.locationButton.activeLocation {
+  box-shadow: 0 0 0 3px
+    color-mix(in srgb, var(--color-brand-cyan) 18%, transparent);
+}
+@media (max-width: 650px) {
+  .locationActions {
+    justify-content: flex-start;
+  }
+  .locationActions .locationButton {
+    width: 100%;
+  }
+}
+.gymCard {
+  width: 100%;
+  max-width: 450px;
+  justify-self: start;
+  min-height: 290px;
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 0;
+  overflow: hidden;
+  padding: 0;
+  text-align: left;
+}
+.gymCard > .logo {
+  position: relative;
+  width: 100%;
+  height: 145px;
+  flex: 0 0 145px;
+  border: 0;
+  border-bottom: 1px solid var(--color-border-subtle);
+  border-radius: 0;
+  background: radial-gradient(circle at 50% 45%, color-mix(in srgb, var(--color-brand-cyan) 14%, transparent), transparent 34%), linear-gradient(145deg, var(--color-surface-elevated), var(--color-background-secondary));
+}
+.gymCard > .logo::before {
+  content: "";
+  position: absolute;
+  width: 112px;
+  height: 112px;
+  border: 1px solid color-mix(in srgb, var(--color-brand-cyan) 18%, transparent);
+  border-radius: 36px;
+  transform: rotate(8deg);
+}
+.gymCard > .logo img {
+  position: relative;
+  z-index: 1;
+  width: 88px;
+  height: 88px;
+  padding: 0;
+  object-fit: contain;
+  border: 1px solid color-mix(in srgb, var(--color-brand-cyan) 28%, var(--color-border));
+  border-radius: 25px;
+  background: var(--color-surface);
+  box-shadow: 0 18px 40px rgba(0,0,0,.28);
+}
+.gymCard > .logo svg {
+  width: 48px;
+  height: 48px;
+}
+.gymCard > .gymInfo {
+  width: 100%;
+  padding: 16px 18px 17px;
+}
+.gymCard > .gymInfo h2 {
+  font-size: 1.25rem;
+}
+.gymCard > .gymInfo p {
+  min-height: 2.2em;
+}
+.gymCard > .gymInfo > div {
+  flex-wrap: wrap;
+}
+.gymCard.currentGymCard {
+  position: relative;
+  border: 2px solid #b7f43d;
+  background: linear-gradient(145deg, color-mix(in srgb, var(--color-surface) 92%, #b7f43d), var(--color-surface));
+  box-shadow: 0 18px 48px color-mix(in srgb, #b7f43d 20%, transparent);
+}
+.gymCard.memberGymCard {
+  position: relative;
+  border: 2px solid #b7f43d;
+  background: linear-gradient(145deg, color-mix(in srgb, var(--color-surface) 88%, #b7f43d), var(--color-surface));
+  box-shadow: 0 18px 48px rgba(183,244,61,.16);
+}
+.memberGymCard > .logo {
+  background: radial-gradient(circle at 50% 45%, rgba(183,244,61,.24), transparent 42%), linear-gradient(145deg, var(--color-surface-elevated), var(--color-background-secondary));
+}
+.memberStatus {
+  display: inline-flex;
+  width: fit-content;
+  margin: 0 0 7px;
+  color: #b7f43d;
+  font-size: .74rem;
+  font-weight: 900;
+  letter-spacing: .05em;
+  text-transform: uppercase;
+}
+.currentGymCard > .logo {
+  background: radial-gradient(circle at 50% 45%, color-mix(in srgb, #b7f43d 24%, transparent), transparent 40%), linear-gradient(145deg, var(--color-surface-elevated), var(--color-background-secondary));
+}
+.youAreHere {
+  position: absolute;
+  z-index: 4;
+  top: 12px;
+  right: 12px;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 7px 10px;
+  color: #101810;
+  border-radius: 999px;
+  background: #b7f43d;
+  box-shadow: 0 8px 20px rgba(0,0,0,.2);
+  font-size: .72rem;
+  font-weight: 900;
+  letter-spacing: .02em;
+}
+.youAreHere svg { width: 15px; height: 15px; }
+@media (max-width: 650px) {
+  .gymCard {
+    width: 100%;
+    max-width: none;
+    min-height: 260px;
+  }
+  .gymCard > .logo {
+    width: 100%;
+    height: 125px;
+    flex-basis: 125px;
+    border-radius: 0;
+  }
+  .gymCard > .gymInfo {
+    padding: 16px;
+  }
+  .gymCard > .logo img {
+    width: 76px;
+    height: 76px;
+    padding: 0;
+  }
+  .gymCard > .logo::before { width: 98px; height: 98px; border-radius: 26px; }
+}
+
+.searchBar {
+  position: relative;
+  border-color: color-mix(
+    in srgb,
+    var(--color-brand-cyan) 18%,
+    var(--color-border)
+  );
+  background: linear-gradient(
+    135deg,
+    color-mix(in srgb, var(--color-surface) 92%, var(--color-brand-cyan)),
+    var(--color-surface)
+  );
+  box-shadow:
+    0 14px 35px rgba(0, 0, 0, 0.18),
+    inset 0 1px rgba(255, 255, 255, 0.04);
+  transition:
+    border-color 0.2s ease,
+    box-shadow 0.2s ease,
+    transform 0.2s ease;
+}
+
+.searchBar:focus-within {
+  border-color: color-mix(
+    in srgb,
+    var(--color-brand-cyan) 68%,
+    var(--color-border)
+  );
+  box-shadow:
+    0 18px 42px rgba(0, 0, 0, 0.22),
+    0 0 0 4px color-mix(in srgb, var(--color-brand-cyan) 13%, transparent),
+    inset 0 1px rgba(255, 255, 255, 0.06);
+  transform: translateY(-1px);
+}
+
+.searchBar > svg {
+  color: var(--color-brand-cyan);
+  filter: drop-shadow(
+    0 0 7px color-mix(in srgb, var(--color-brand-cyan) 45%, transparent)
+  );
+}
+
+.searchBar input {
+  min-width: 0;
+  font-size: 0.95rem;
+}
+
+.searchBar input::placeholder {
+  color: var(--color-text-muted);
+  opacity: 0.8;
+}
+
+.searchBar button {
+  min-width: 108px;
+  background: linear-gradient(
+    135deg,
+    var(--color-brand-cyan),
+    color-mix(in srgb, var(--color-brand-cyan) 65%, #79f0c0)
+  );
+  box-shadow: 0 8px 18px
+    color-mix(in srgb, var(--color-brand-cyan) 24%, transparent);
+  transition:
+    transform 0.2s ease,
+    box-shadow 0.2s ease,
+    filter 0.2s ease;
+}
+
+.searchBar button:hover:not(:disabled) {
+  filter: brightness(1.08);
+  box-shadow: 0 11px 24px
+    color-mix(in srgb, var(--color-brand-cyan) 32%, transparent);
+  transform: translateY(-1px);
+}
+
+.searchBar button:active:not(:disabled) {
+  transform: translateY(0);
+}
+
+.searchBar {
+  height: 50px;
+  gap: 9px;
+  padding: 5px 6px 5px 14px;
+}
+
+.searchBar input {
+  border: 0;
+  box-shadow: none;
+  font-size: 0.88rem;
+}
+
+.searchBar button {
+  height: 38px;
+  min-width: 94px;
+  padding: 0 17px;
+  font-size: 0.75rem;
+}
